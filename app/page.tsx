@@ -1,65 +1,175 @@
-import Image from "next/image";
+import { Metadata } from "next";
+import { Navbar } from "@/components/layout/navbar";
+import { Footer } from "@/components/layout/footer";
+import { Hero } from "@/components/sections/hero";
+import { SocialProof } from "@/components/sections/social-proof";
+import { FeaturedTemplates } from "@/components/sections/featured-templates";
+import { HowItWorks } from "@/components/sections/how-it-works";
+import { WallOfLove } from "@/components/testimonials/testimonial-card";
+import { FAQ } from "@/components/sections/faq";
+import { NewsletterCTA } from "@/components/sections/newsletter-cta";
+import { getFeaturedTestimonials } from "@/lib/data";
 
-export default function Home() {
+// ... [skipping middle sections for brevity if possible, but tool needs exact match]
+
+export const metadata: Metadata = {
+  title: "BudgetKE — Professional Financial Templates for Kenyans",
+  description:
+    "Kenya's #1 source for budget planners, bookkeeping tools, and financial templates. Track M-Pesa expenses, manage your business, and grow your savings. Instant download via M-Pesa.",
+  keywords: [
+    "budget planner Kenya",
+    "Excel templates Kenya",
+    "finance templates",
+    "business bookkeeping Kenya",
+    "M-Pesa expense tracker",
+    "Google Sheets templates",
+  ],
+  openGraph: {
+    title: "BudgetKE — Professional Financial Templates for Kenyans",
+    description:
+      "Kenya's #1 source for budget planners and financial templates. Track every shilling.",
+    url: process.env.NEXT_PUBLIC_APP_URL,
+    siteName: "BudgetKE",
+    locale: "en_KE",
+    type: "website",
+  },
+};
+
+// Organization JSON-LD
+function OrganizationJsonLd() {
+  const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "https://budget.ke";
+
+  const schema = {
+    "@context": "https://schema.org",
+    "@type": "Organization",
+    name: "BudgetKE",
+    url: baseUrl,
+    logo: `${baseUrl}/logo.png`,
+    description:
+      "Kenya's leading provider of professional financial templates and budget planning tools.",
+    foundingDate: "2024",
+    founders: [
+      {
+        "@type": "Person",
+        name: "BudgetKE Team",
+      },
+    ],
+    address: {
+      "@type": "PostalAddress",
+      addressLocality: "Nairobi",
+      addressCountry: "KE",
+    },
+    contactPoint: {
+      "@type": "ContactPoint",
+      contactType: "customer service",
+      email: "support@budgetke.com",
+      availableLanguage: ["English", "Swahili"],
+    },
+    sameAs: [
+      "https://facebook.com/budgetke",
+      "https://instagram.com/budgetke",
+      "https://twitter.com/budgetke",
+      "https://youtube.com/budgetke",
+    ],
+  };
+
   return (
-    <div className="flex min-h-screen items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex min-h-screen w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
-        </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
-        </div>
+    <script
+      type="application/ld+json"
+      dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }}
+    />
+  );
+}
+
+// Website JSON-LD with SearchAction
+function WebsiteJsonLd() {
+  const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "https://budget.ke";
+
+  const schema = {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    name: "BudgetKE",
+    url: baseUrl,
+    potentialAction: {
+      "@type": "SearchAction",
+      target: {
+        "@type": "EntryPoint",
+        urlTemplate: `${baseUrl}/templates?search={search_term_string}`,
+      },
+      "query-input": "required name=search_term_string",
+    },
+  };
+
+  return (
+    <script
+      type="application/ld+json"
+      dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }}
+    />
+  );
+}
+
+import { createClient } from "@/lib/supabase/server";
+import { mapProducts } from "@/lib/mappers";
+import { CategoriesSection } from "@/components/sections/categories";
+import { ProductsSection } from "@/components/sections/products-grid";
+import { BlogSection } from "@/components/sections/blog-section";
+import { getLatestBlogs } from "@/lib/blog";
+
+export default async function HomePage() {
+  const supabase = await createClient();
+
+  // 1. Fetch Categories
+  const { data: categories = [] } = await supabase
+    .from("categories")
+    .select("*")
+    .order("display_order", { ascending: true })
+    .limit(4);
+
+  // 2. Fetch Featured Products
+  const { data: productsData = [] } = await supabase
+    .from("products")
+    .select("*")
+    .eq("status", "active")
+    .order("created_at", { ascending: false });
+
+  const products = mapProducts(productsData || []);
+
+  const testimonials = getFeaturedTestimonials();
+
+  return (
+    <>
+      <OrganizationJsonLd />
+      <WebsiteJsonLd />
+
+      <Navbar />
+
+      <main className="mt-[112px]">
+        {/* Hero Section */}
+        <Hero />
+
+        {/* Categories Section */}
+        <CategoriesSection categories={categories as any[]} />
+
+        {/* Unified Products Grid */}
+        <ProductsSection products={products} categories={categories as any[]} />
+
+        {/* How It Works */}
+        <HowItWorks />
+
+        {/* Wall of Love */}
+        <SocialProof />
+
+        {/* Blog Section */}
+        <BlogSection blogs={getLatestBlogs(6)} />
+
+        {/* FAQ */}
+        <FAQ />
+
+        {/* Newsletter CTA */}
+        <NewsletterCTA />
       </main>
-    </div>
+
+      <Footer />
+    </>
   );
 }
