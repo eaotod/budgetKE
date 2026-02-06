@@ -5,7 +5,8 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, Dialog
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Loader2, Phone } from "lucide-react";
+import { HugeiconsIcon } from "@hugeicons/react";
+import { CallIcon, Loading03Icon } from "@hugeicons/core-free-icons";
 import { toast } from "sonner"; // Assuming sonner is installed or we use basic alert
 
 interface CheckoutModalProps {
@@ -85,7 +86,10 @@ export function CheckoutModal({ productName, amount }: CheckoutModalProps) {
                     onChange={(e) => setPhone(e.target.value)}
                     className="pl-10"
                 />
-                <Phone className="w-4 h-4 text-gray-400 absolute left-3 top-3" />
+                <HugeiconsIcon
+                  icon={CallIcon}
+                  className="w-4 h-4 text-gray-400 absolute left-3 top-3"
+                />
               </div>
             </div>
             <Button 
@@ -93,14 +97,19 @@ export function CheckoutModal({ productName, amount }: CheckoutModalProps) {
                 className="w-full bg-green-600 hover:bg-green-700 text-white" 
                 disabled={loading || !phone || !email}
             >
-              {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+              {loading && (
+                <HugeiconsIcon
+                  icon={Loading03Icon}
+                  className="mr-2 h-4 w-4 animate-spin"
+                />
+              )}
               {loading ? "Processsing..." : "Pay Now"}
             </Button>
           </div>
         ) : (
           <div className="py-8 text-center space-y-4">
             <div className="mx-auto w-12 h-12 bg-green-100 rounded-full flex items-center justify-center animate-pulse">
-                <Phone className="w-6 h-6 text-green-600" />
+                <HugeiconsIcon icon={CallIcon} className="w-6 h-6 text-green-600" />
             </div>
             <h3 className="text-lg font-bold">Check your phone!</h3>
             <p className="text-gray-500">

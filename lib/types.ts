@@ -293,6 +293,26 @@ export interface GlobalFAQ {
 }
 
 // ============================================
+// SERVICES
+// ============================================
+
+export interface Service {
+  id: string;
+  name: string;
+  slug: string;
+  tier: "basic" | "advanced" | "premium";
+  priceMin: number;
+  priceMax: number;
+  currency: string;
+  timeline?: string;
+  shortDescription?: string;
+  description?: string;
+  features: string[];
+  deliverables: string[];
+  status: "active" | "draft";
+}
+
+// ============================================
 // CART
 // ============================================
 

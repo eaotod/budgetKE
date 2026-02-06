@@ -1,7 +1,14 @@
 import { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { Download, CheckCircle, FileSpreadsheet, AlertTriangle, Clock } from "lucide-react";
+import { HugeiconsIcon } from "@hugeicons/react";
+import {
+  Alert01Icon,
+  CheckmarkCircle02Icon,
+  Clock01Icon,
+  Download01Icon,
+  Xls01Icon,
+} from "@hugeicons/core-free-icons";
 import { Button } from "@/components/ui/button";
 import { Navbar } from "@/components/layout/navbar";
 import { Footer } from "@/components/layout/footer";
@@ -46,7 +53,7 @@ export default async function DownloadPage({ params }: DownloadPageProps) {
           <div className="container mx-auto px-4">
             <div className="max-w-md mx-auto text-center py-16">
               <div className="w-20 h-20 bg-yellow-100 rounded-full flex items-center justify-center mx-auto mb-6">
-                <Clock className="w-10 h-10 text-yellow-600" />
+                <HugeiconsIcon icon={Clock01Icon} className="w-10 h-10 text-yellow-600" />
               </div>
               <h1 className="text-2xl font-bold text-gray-900 mb-4">
                 Payment Pending
@@ -79,7 +86,7 @@ export default async function DownloadPage({ params }: DownloadPageProps) {
           <div className="container mx-auto px-4">
             <div className="max-w-md mx-auto text-center py-16">
               <div className="w-20 h-20 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-6">
-                <AlertTriangle className="w-10 h-10 text-red-600" />
+                <HugeiconsIcon icon={Alert01Icon} className="w-10 h-10 text-red-600" />
               </div>
               <h1 className="text-2xl font-bold text-gray-900 mb-4">
                 Download Limit Reached
@@ -116,7 +123,7 @@ export default async function DownloadPage({ params }: DownloadPageProps) {
             {/* Success header */}
             <div className="text-center mb-8">
               <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
-                <CheckCircle className="w-10 h-10 text-green-600" />
+                <HugeiconsIcon icon={CheckmarkCircle02Icon} className="w-10 h-10 text-green-600" />
               </div>
               <h1 className="text-2xl font-bold text-gray-900 mb-2">
                 Your Downloads Are Ready!
@@ -129,7 +136,7 @@ export default async function DownloadPage({ params }: DownloadPageProps) {
             {/* Download card */}
             <div className="bg-white rounded-2xl shadow-sm p-6 mb-6">
               <h2 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
-                <FileSpreadsheet className="w-5 h-5 text-primary" />
+                <HugeiconsIcon icon={Xls01Icon} className="w-5 h-5 text-primary" />
                 Your Files
               </h2>
 
@@ -150,7 +157,7 @@ export default async function DownloadPage({ params }: DownloadPageProps) {
                     </div>
                     <form action={`/api/download/${token}/${item.productId}`}>
                       <Button type="submit" variant="outline" size="sm" className="rounded-full">
-                        <Download className="w-4 h-4 mr-2" />
+                        <HugeiconsIcon icon={Download01Icon} className="w-4 h-4 mr-2" />
                         Download
                       </Button>
                     </form>
@@ -160,7 +167,7 @@ export default async function DownloadPage({ params }: DownloadPageProps) {
 
               <div className="mt-6 pt-4 border-t border-gray-100">
                 <p className="text-sm text-gray-500 flex items-center gap-2">
-                  <Download className="w-4 h-4" />
+                  <HugeiconsIcon icon={Download01Icon} className="w-4 h-4" />
                   {downloadsRemaining} download{downloadsRemaining !== 1 ? "s" : ""} remaining
                 </p>
               </div>

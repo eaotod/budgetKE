@@ -2,16 +2,18 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import { HugeiconsIcon } from "@hugeicons/react";
 import {
-  Upload,
-  Save,
-  Loader2,
-  X,
-  FileIcon,
-  ImageIcon,
-  CheckCircle2,
-  Plus,
-} from "lucide-react";
+  Add01Icon,
+  Cancel01Icon,
+  CheckmarkCircle02Icon,
+  File01Icon,
+  FloppyDiskIcon,
+  Image01Icon,
+  Loading03Icon,
+  Upload01Icon,
+} from "@hugeicons/core-free-icons";
+import dynamic from "next/dynamic";
 import { uploadFile, getPublicUrl, deleteFile } from "@/lib/supabase/storage";
 import { createClient } from "@/lib/supabase/client";
 import slugify from "slugify";
@@ -22,6 +24,10 @@ interface ProductFormProps {
   initialData?: any;
   isEditing?: boolean;
 }
+
+const MarkdownEditor = dynamic(() => import("@uiw/react-md-editor"), {
+  ssr: false,
+});
 
 export function ProductForm({
   initialData,
@@ -175,7 +181,7 @@ export function ProductForm({
         short_description: shortDescription,
         description,
         thumbnail_url: finalThumbnailUrl,
-        images: JSON.stringify(allImages),
+        images: allImages,
         file_url: finalFileUrl,
         file_name: finalFileName,
         file_size: finalFileSize,
@@ -269,13 +275,21 @@ export function ProductForm({
             <label className="text-sm font-black text-gray-900 uppercase tracking-widest px-1">
               Long Description
             </label>
-            <textarea
-              value={description}
-              onChange={(e) => setDescription(e.target.value)}
-              rows={8}
-              placeholder="Detailed features, how it works, what's included..."
-              className="w-full px-6 py-4 bg-gray-50 border border-gray-100 rounded-2xl focus:outline-none focus:ring-4 focus:ring-primary/5 focus:border-primary transition-all font-medium text-gray-700"
-            />
+            <div
+              className="rounded-2xl border border-gray-100 bg-white p-2"
+              data-color-mode="light"
+            >
+              <MarkdownEditor
+                value={description}
+                onChange={(value) => setDescription(value || "")}
+                preview="edit"
+                height={280}
+                textareaProps={{
+                  placeholder:
+                    "Detailed features, how it works, what's included...",
+                }}
+              />
+            </div>
           </div>
         </div>
 
@@ -314,14 +328,14 @@ export function ProductForm({
                     )}
                     title="Set as Thumbnail"
                   >
-                    <ImageIcon className="w-4 h-4" />
+                    <HugeiconsIcon icon={Image01Icon} className="w-4 h-4" />
                   </button>
                   <button
                     type="button"
                     onClick={() => removeExistingImage(url)}
                     className="p-2 bg-white text-red-600 rounded-xl hover:bg-red-600 hover:text-white transition-all"
                   >
-                    <X className="w-4 h-4" />
+                    <HugeiconsIcon icon={Cancel01Icon} className="w-4 h-4" />
                   </button>
                 </div>
                 {thumbnailUrl === url && (
@@ -353,7 +367,7 @@ export function ProductForm({
                   onClick={() => removeNewImage(idx)}
                   className="absolute top-3 right-3 p-2 bg-white text-red-600 rounded-xl hover:bg-red-600 hover:text-white transition-all shadow-sm"
                 >
-                  <X className="w-4 h-4" />
+                  <HugeiconsIcon icon={Cancel01Icon} className="w-4 h-4" />
                 </button>
               </div>
             ))}
@@ -361,7 +375,10 @@ export function ProductForm({
             {/* Upload Button */}
             <label className="aspect-square flex flex-col items-center justify-center border-2 border-dashed border-gray-100 rounded-3xl hover:border-primary/50 hover:bg-primary/5 transition-all cursor-pointer group">
               <div className="p-4 bg-gray-50 rounded-2xl group-hover:bg-primary/10 transition-colors">
-                <Plus className="w-6 h-6 text-gray-400 group-hover:text-primary" />
+                <HugeiconsIcon
+                  icon={Add01Icon}
+                  className="w-6 h-6 text-gray-400 group-hover:text-primary"
+                />
               </div>
               <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest mt-4">
                 Add Media
@@ -480,7 +497,7 @@ export function ProductForm({
           {templateFile ? (
             <div className="flex items-center gap-4 p-5 bg-primary/5 rounded-[1.5rem] border border-primary/10">
               <div className="p-3 bg-primary/10 rounded-xl text-primary font-bold">
-                <CheckCircle2 className="w-6 h-6" />
+                <HugeiconsIcon icon={CheckmarkCircle02Icon} className="w-6 h-6" />
               </div>
               <div className="flex-1 min-w-0">
                 <div className="text-xs font-black text-gray-900 truncate uppercase tracking-tight">
@@ -495,13 +512,13 @@ export function ProductForm({
                 onClick={() => setTemplateFile(null)}
                 className="p-2 hover:bg-red-50 rounded-xl text-red-400 hover:text-red-500 transition-all"
               >
-                <X className="w-5 h-5" />
+                <HugeiconsIcon icon={Cancel01Icon} className="w-5 h-5" />
               </button>
             </div>
           ) : (
             <label className="flex items-center gap-5 p-6 border-2 border-dashed border-gray-100 rounded-[2rem] hover:border-primary/50 hover:bg-primary/5 transition-all cursor-pointer group">
               <div className="p-4 bg-gray-50 rounded-2xl text-gray-400 group-hover:bg-primary/10 group-hover:text-primary transition-all">
-                <Upload className="w-6 h-6" />
+                <HugeiconsIcon icon={Upload01Icon} className="w-6 h-6" />
               </div>
               <div className="flex flex-col">
                 <span className="text-xs font-black text-gray-900 uppercase tracking-tight">
@@ -522,7 +539,7 @@ export function ProductForm({
           )}
           {isEditing && existingFileUrl && !templateFile && (
             <div className="px-4 py-2 bg-gray-50 rounded-xl border border-gray-100 flex items-center gap-3">
-              <FileIcon className="w-4 h-4 text-gray-400" />
+              <HugeiconsIcon icon={File01Icon} className="w-4 h-4 text-gray-400" />
               <span className="text-[10px] font-bold text-gray-500 uppercase tracking-widest truncate">
                 {existingFileName}
               </span>
@@ -536,9 +553,15 @@ export function ProductForm({
           className="w-full bg-gray-900 hover:bg-black text-white py-6 rounded-[2rem] font-black uppercase tracking-widest flex items-center justify-center gap-4 transition-all shadow-2xl shadow-gray-200 disabled:opacity-50 group hover:-translate-y-1 active:translate-y-0"
         >
           {loading ? (
-            <Loader2 className="w-6 h-6 animate-spin" />
+            <HugeiconsIcon
+              icon={Loading03Icon}
+              className="w-6 h-6 animate-spin"
+            />
           ) : (
-            <Save className="w-6 h-6 group-hover:scale-110 transition-transform" />
+            <HugeiconsIcon
+              icon={FloppyDiskIcon}
+              className="w-6 h-6 group-hover:scale-110 transition-transform"
+            />
           )}
           {loading
             ? "Saving..."

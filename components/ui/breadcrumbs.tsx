@@ -1,5 +1,6 @@
 import Link from "next/link";
-import { ChevronRight, Home } from "lucide-react";
+import { HugeiconsIcon } from "@hugeicons/react";
+import { ArrowRight01Icon, Home01Icon } from "@hugeicons/core-free-icons";
 import { cn } from "@/lib/utils";
 
 export interface BreadcrumbItem {
@@ -22,13 +23,16 @@ export function Breadcrumbs({ items, className }: BreadcrumbsProps) {
         href="/"
         className="flex items-center gap-1 hover:text-primary transition-colors"
       >
-        <Home className="w-4 h-4" />
+        <HugeiconsIcon icon={Home01Icon} className="w-4 h-4" />
         <span className="sr-only">Home</span>
       </Link>
 
       {items.map((item, index) => (
         <div key={index} className="flex items-center gap-1">
-          <ChevronRight className="w-4 h-4 text-gray-300" />
+          <HugeiconsIcon
+            icon={ArrowRight01Icon}
+            className="w-4 h-4 text-gray-300"
+          />
           {item.href && index < items.length - 1 ? (
             <Link
               href={item.href}

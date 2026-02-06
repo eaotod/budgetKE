@@ -3,10 +3,17 @@
 import Image from "next/image";
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import { Menu, X, ChevronRight, User as UserIcon } from "lucide-react";
+import { HugeiconsIcon } from "@hugeicons/react";
+import {
+  ArrowRight01Icon,
+  Cancel01Icon,
+  Menu01Icon,
+  UserIcon,
+} from "@hugeicons/core-free-icons";
 import { Button } from "@/components/ui/button";
 import { CartButton, CartDrawer } from "@/components/cart/cart-drawer";
 import { cn } from "@/lib/utils";
+import { createClient } from "@/lib/supabase/client";
 
 const navigation = [
   { name: "Templates", href: "/templates" },
@@ -19,6 +26,7 @@ const navigation = [
 export function Navbar() {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [isAdmin, setIsAdmin] = useState(false);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -32,6 +40,25 @@ export function Navbar() {
   // Close mobile menu on route change
   useEffect(() => {
     setIsMobileMenuOpen(false);
+  }, []);
+
+  useEffect(() => {
+    const supabase = createClient();
+    supabase.auth.getUser().then(({ data }) => {
+      const user = data.user;
+      if (user && (user.user_metadata?.role === "admin" || user.email)) {
+        const email = user.email?.toLowerCase() || "";
+        const adminEmails = (
+          process.env.NEXT_PUBLIC_ADMIN_EMAILS || process.env.ADMIN_EMAIL || ""
+        )
+          .split(",")
+          .map((e) => e.trim().toLowerCase())
+          .filter(Boolean);
+        if (user.user_metadata?.role === "admin" || adminEmails.includes(email)) {
+          setIsAdmin(true);
+        }
+      }
+    });
   }, []);
 
   return (
@@ -94,12 +121,21 @@ export function Navbar() {
                 Blog
               </Link>
 
+              {isAdmin && (
+                <Link
+                  href="/manage"
+                  className="text-sm font-black text-primary hover:text-primary/80 transition-colors uppercase tracking-widest"
+                >
+                  Dashboard
+                </Link>
+              )}
+
               <Link
                 href="/account"
                 className="p-2 rounded-full text-gray-700 hover:bg-gray-100 transition-colors"
                 aria-label="Account"
               >
-                <UserIcon className="w-5 h-5" />
+                <HugeiconsIcon icon={UserIcon} className="w-5 h-5" />
               </Link>
 
               <CartButton />
@@ -121,9 +157,9 @@ export function Navbar() {
                 aria-label="Toggle menu"
               >
                 {isMobileMenuOpen ? (
-                  <X className="w-6 h-6" />
+                  <HugeiconsIcon icon={Cancel01Icon} className="w-6 h-6" />
                 ) : (
-                  <Menu className="w-6 h-6" />
+                  <HugeiconsIcon icon={Menu01Icon} className="w-6 h-6" />
                 )}
               </button>
             </div>
@@ -149,9 +185,26 @@ export function Navbar() {
                   className="flex items-center justify-between p-4 rounded-xl hover:bg-gray-50 text-gray-700 hover:text-primary transition-colors group"
                 >
                   <span className="font-medium text-lg">{item.name}</span>
-                  <ChevronRight className="w-5 h-5 text-gray-300 group-hover:text-primary transition-colors" />
+                  <HugeiconsIcon
+                    icon={ArrowRight01Icon}
+                    className="w-5 h-5 text-gray-300 group-hover:text-primary transition-colors"
+                  />
                 </Link>
               ))}
+
+              {isAdmin && (
+                <Link
+                  href="/manage"
+                  onClick={() => setIsMobileMenuOpen(false)}
+                  className="flex items-center justify-between p-4 rounded-xl hover:bg-gray-50 text-gray-700 hover:text-primary transition-colors group"
+                >
+                  <span className="font-medium text-lg">Dashboard</span>
+                  <HugeiconsIcon
+                    icon={ArrowRight01Icon}
+                    className="w-5 h-5 text-gray-300 group-hover:text-primary transition-colors"
+                  />
+                </Link>
+              )}
             </nav>
 
             <div className="mt-6 pt-6 border-t border-gray-100">

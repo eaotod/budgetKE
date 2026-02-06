@@ -30,6 +30,35 @@ CREATE TABLE categories (
 );
 
 -- ============================================
+-- 1b. SERVICES
+-- ============================================
+CREATE TABLE services (
+    id TEXT PRIMARY KEY,
+    name TEXT NOT NULL,
+    slug TEXT UNIQUE NOT NULL,
+    tier TEXT NOT NULL CHECK (tier IN ('basic','advanced','premium')),
+    price_min INTEGER,
+    price_max INTEGER,
+    currency TEXT DEFAULT 'KES',
+    timeline TEXT,
+    short_description TEXT,
+    description TEXT,
+    features JSONB DEFAULT '[]'::jsonb,
+    deliverables JSONB DEFAULT '[]'::jsonb,
+    status TEXT DEFAULT 'active' CHECK (status IN ('active','draft')),
+    created_at TIMESTAMPTZ DEFAULT NOW(),
+    updated_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- ============================================
+-- 0. ADMIN USERS
+-- ============================================
+CREATE TABLE admin_users (
+    email TEXT PRIMARY KEY,
+    created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- ============================================
 -- 2. PRODUCTS
 -- ============================================
 CREATE TABLE products (
@@ -321,6 +350,20 @@ CREATE TRIGGER tr_update_categories_timestamp BEFORE UPDATE ON categories FOR EA
 CREATE TRIGGER tr_update_bundles_timestamp BEFORE UPDATE ON bundles FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
 CREATE TRIGGER tr_update_reviews_timestamp BEFORE UPDATE ON reviews FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
 
+-- Function: Admin check (email-based)
+CREATE OR REPLACE FUNCTION is_admin()
+RETURNS BOOLEAN AS $$
+  WITH token AS (
+    SELECT auth.jwt() AS jwt
+  )
+  SELECT
+    COALESCE((jwt -> 'user_metadata' ->> 'role') = 'admin', FALSE)
+    OR EXISTS (
+      SELECT 1 FROM admin_users WHERE email = jwt ->> 'email'
+    )
+  FROM token;
+$$ LANGUAGE sql STABLE;
+
 -- Function: Generate a unique, professional order number
 -- Format: BK-YYYYMMDD-XXXX (where XXXX is random uppercase)
 CREATE OR REPLACE FUNCTION generate_budgetke_order_number()
@@ -361,6 +404,7 @@ CREATE TRIGGER tr_handle_payment_completion BEFORE UPDATE ON orders FOR EACH ROW
 -- ============================================
 
 ALTER TABLE categories ENABLE ROW LEVEL SECURITY;
+ALTER TABLE services ENABLE ROW LEVEL SECURITY;
 ALTER TABLE products ENABLE ROW LEVEL SECURITY;
 ALTER TABLE product_faqs ENABLE ROW LEVEL SECURITY;
 ALTER TABLE bundles ENABLE ROW LEVEL SECURITY;
@@ -371,9 +415,11 @@ ALTER TABLE newsletter_subscribers ENABLE ROW LEVEL SECURITY;
 ALTER TABLE contact_messages ENABLE ROW LEVEL SECURITY;
 ALTER TABLE download_logs ENABLE ROW LEVEL SECURITY;
 ALTER TABLE global_faqs ENABLE ROW LEVEL SECURITY;
+ALTER TABLE admin_users ENABLE ROW LEVEL SECURITY;
 
 -- PUBLIC READ POLICIES
 CREATE POLICY "Public can view active categories" ON categories FOR SELECT USING (TRUE);
+CREATE POLICY "Public can view active services" ON services FOR SELECT USING (status = 'active');
 CREATE POLICY "Public can view active products" ON products FOR SELECT USING (status = 'active');
 CREATE POLICY "Public can view active bundles" ON bundles FOR SELECT USING (status = 'active');
 CREATE POLICY "Public can view FAQs" ON product_faqs FOR SELECT USING (TRUE);
@@ -389,4 +435,49 @@ CREATE POLICY "Anyone can subscribe to newsletter" ON newsletter_subscribers FOR
 CREATE POLICY "Anyone can send contact messages" ON contact_messages FOR INSERT WITH CHECK (TRUE);
 CREATE POLICY "System can log downloads" ON download_logs FOR INSERT WITH CHECK (TRUE);
 
--- NOTE: ADMIN access should be restricted by Supabase Auth roles in the dashboard or via service role.
+-- ADMIN ACCESS POLICIES
+CREATE POLICY "Admin can manage categories" ON categories
+  FOR ALL USING (is_admin()) WITH CHECK (is_admin());
+CREATE POLICY "Admin can manage services" ON services
+  FOR ALL USING (is_admin()) WITH CHECK (is_admin());
+CREATE POLICY "Admin can manage products" ON products
+  FOR ALL USING (is_admin()) WITH CHECK (is_admin());
+CREATE POLICY "Admin can manage bundles" ON bundles
+  FOR ALL USING (is_admin()) WITH CHECK (is_admin());
+CREATE POLICY "Admin can manage product_faqs" ON product_faqs
+  FOR ALL USING (is_admin()) WITH CHECK (is_admin());
+CREATE POLICY "Admin can manage orders" ON orders
+  FOR ALL USING (is_admin()) WITH CHECK (is_admin());
+CREATE POLICY "Admin can manage reviews" ON reviews
+  FOR ALL USING (is_admin()) WITH CHECK (is_admin());
+CREATE POLICY "Admin can manage testimonials" ON testimonials
+  FOR ALL USING (is_admin()) WITH CHECK (is_admin());
+CREATE POLICY "Admin can manage newsletter_subscribers" ON newsletter_subscribers
+  FOR ALL USING (is_admin()) WITH CHECK (is_admin());
+CREATE POLICY "Admin can manage contact_messages" ON contact_messages
+  FOR ALL USING (is_admin()) WITH CHECK (is_admin());
+CREATE POLICY "Admin can manage download_logs" ON download_logs
+  FOR ALL USING (is_admin()) WITH CHECK (is_admin());
+CREATE POLICY "Admin can manage global_faqs" ON global_faqs
+  FOR ALL USING (is_admin()) WITH CHECK (is_admin());
+CREATE POLICY "Admin can read admin_users" ON admin_users
+  FOR SELECT USING (is_admin());
+
+-- CUSTOMER ACCESS POLICIES
+CREATE POLICY "Customers can view their orders" ON orders
+  FOR SELECT USING (email = auth.jwt() ->> 'email');
+
+-- STORAGE POLICIES (Supabase Storage)
+ALTER TABLE storage.objects ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY "Public can view product images" ON storage.objects
+  FOR SELECT
+  USING (
+    bucket_id = 'budgetke'
+    AND name LIKE 'products/images/%'
+  );
+
+CREATE POLICY "Admin can manage storage" ON storage.objects
+  FOR ALL
+  USING (is_admin())
+  WITH CHECK (is_admin());

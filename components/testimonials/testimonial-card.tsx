@@ -1,4 +1,5 @@
-import { Quote, Star } from "lucide-react";
+import { HugeiconsIcon } from "@hugeicons/react";
+import { QuoteDownIcon, StarIcon } from "@hugeicons/core-free-icons";
 import { VideoPlayer } from "@/components/ui/video-player";
 import type { Testimonial } from "@/lib/types";
 
@@ -7,12 +8,19 @@ export function TestimonialCard({ testimonial }: { testimonial: Testimonial }) {
   return (
     <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 flex flex-col h-full">
       {/* Quote icon */}
-      <Quote className="w-8 h-8 text-primary/20 mb-4" />
+      <HugeiconsIcon
+        icon={QuoteDownIcon}
+        className="w-8 h-8 text-primary/20 mb-4"
+      />
 
       {/* Stars */}
       <div className="flex items-center gap-0.5 mb-4">
         {Array.from({ length: testimonial.rating }).map((_, i) => (
-          <Star key={i} className="w-4 h-4 text-yellow-400 fill-yellow-400" />
+          <HugeiconsIcon
+            key={i}
+            icon={StarIcon}
+            className="w-4 h-4 text-yellow-400"
+          />
         ))}
       </div>
 

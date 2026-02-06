@@ -1,7 +1,8 @@
 "use client";
 
 import { useState, useMemo } from "react";
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import { HugeiconsIcon } from "@hugeicons/react";
+import { ArrowLeft01Icon, ArrowRight01Icon } from "@hugeicons/core-free-icons";
 import { Button } from "@/components/ui/button";
 import { ProductCard } from "@/components/ui/product-card";
 import { cn } from "@/lib/utils";
@@ -118,7 +119,7 @@ export function ProductsSection({
               onClick={() => setCurrentPage((prev) => Math.max(1, prev - 1))}
               className="rounded-full w-10 h-10 border-gray-100 hover:bg-primary hover:text-white hover:border-primary transition-all"
             >
-              <ChevronLeft className="w-4 h-4" />
+              <HugeiconsIcon icon={ArrowLeft01Icon} className="w-4 h-4" />
             </Button>
 
             <div className="flex items-center gap-2">
@@ -149,7 +150,7 @@ export function ProductsSection({
               }
               className="rounded-full w-12 h-12 border-2 hover:bg-primary hover:text-white hover:border-primary transition-all"
             >
-              <ChevronRight className="w-5 h-5" />
+              <HugeiconsIcon icon={ArrowRight01Icon} className="w-5 h-5" />
             </Button>
           </div>
         )}

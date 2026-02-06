@@ -3,15 +3,14 @@ import { Footer } from "@/components/layout/footer";
 import { Button } from "@/components/ui/button";
 import { HugeiconsIcon } from "@hugeicons/react";
 import {
-  FileEditIcon,
-  CodeIcon,
-  Settings02Icon,
   ArrowRight02Icon,
   CheckmarkCircle02Icon,
   Rocket02Icon,
+  Settings02Icon,
 } from "@hugeicons/core-free-icons";
 import Link from "next/link";
 import type { Metadata } from "next";
+import { createAdminClient } from "@/lib/supabase/admin";
 
 export const metadata: Metadata = {
   title: "Custom Services | BudgetKE",
@@ -19,58 +18,14 @@ export const metadata: Metadata = {
     "Get custom Excel templates and PWA applications built specifically for your business needs. From simple templates to enterprise apps.",
 };
 
-const services = [
-  {
-    id: "custom-template",
-    name: "Custom Excel Template",
-    price: "KES 15,000 - 30,000",
-    timeline: "3-5 days",
-    icon: FileEditIcon,
-    description:
-      "Fully customized Excel/Sheets template built to your exact specifications.",
-    features: [
-      "1-2 consultation calls",
-      "Fully customized to your needs",
-      "Unlimited revisions",
-      "30 days support",
-      "Video tutorial included",
-    ],
-  },
-  {
-    id: "advanced-template",
-    name: "Advanced Custom Template",
-    price: "KES 30,000 - 60,000",
-    timeline: "1-2 weeks",
-    icon: Settings02Icon,
-    description:
-      "Complex templates with automations, macros, and API integrations.",
-    features: [
-      "Complex calculations & automations",
-      "Multiple connected sheets",
-      "Dashboard with live charts",
-      "Google Apps Script/VBA macros",
-      "60 days priority support",
-    ],
-  },
-  {
-    id: "custom-pwa",
-    name: "Custom PWA Application",
-    price: "KES 60,000 - 300,000",
-    timeline: "2-8 weeks",
-    icon: CodeIcon,
-    description:
-      "Offline-first Progressive Web App that works like a native mobile app.",
-    features: [
-      "Works offline, syncs when online",
-      "Installable on phone & desktop",
-      "Custom branding & design",
-      "Cloud backend available",
-      "Multi-user support possible",
-    ],
-  },
-];
+export default async function ServicesPage() {
+  const supabase = createAdminClient();
+  const { data: services = [] } = await supabase
+    .from("services")
+    .select("*")
+    .eq("status", "active")
+    .order("created_at", { ascending: true });
 
-export default function ServicesPage() {
   return (
     <>
       <Navbar />
@@ -103,11 +58,7 @@ export default function ServicesPage() {
                   className="bg-white rounded-[2.5rem] border border-gray-100 p-8 lg:p-10 hover:shadow-2xl hover:shadow-gray-200/50 hover:border-primary/20 transition-all duration-500 group"
                 >
                   <div className="w-16 h-16 bg-primary/5 rounded-2xl flex items-center justify-center mb-8 group-hover:bg-primary/10 group-hover:scale-110 transition-all duration-300">
-                    <HugeiconsIcon
-                      icon={service.icon}
-                      size={28}
-                      className="text-primary"
-                    />
+                    <HugeiconsIcon icon={Settings02Icon} size={28} className="text-primary" />
                   </div>
 
                   <h3 className="text-xl font-black text-gray-900 tracking-tight mb-2">
@@ -117,28 +68,33 @@ export default function ServicesPage() {
                     {service.description}
                   </p>
 
-                  <div className="flex items-center gap-4 mb-6 pb-6 border-b border-gray-100">
-                    <div>
-                      <div className="text-xs text-gray-400 font-bold uppercase tracking-widest">
-                        Price
+                    <div className="flex items-center gap-4 mb-6 pb-6 border-b border-gray-100">
+                      <div>
+                        <div className="text-xs text-gray-400 font-bold uppercase tracking-widest">
+                          Price
+                        </div>
+                        <div className="text-lg font-black text-gray-900">
+                          {service.price_min
+                            ? `KES ${service.price_min.toLocaleString()}`
+                            : "Custom"}{" "}
+                          {service.price_max
+                            ? `- KES ${service.price_max.toLocaleString()}`
+                            : ""}
+                        </div>
                       </div>
-                      <div className="text-lg font-black text-gray-900">
-                        {service.price}
+                      <div className="w-px h-10 bg-gray-100" />
+                      <div>
+                        <div className="text-xs text-gray-400 font-bold uppercase tracking-widest">
+                          Timeline
+                        </div>
+                        <div className="text-lg font-black text-gray-900">
+                          {service.timeline || "Varies"}
+                        </div>
                       </div>
                     </div>
-                    <div className="w-px h-10 bg-gray-100" />
-                    <div>
-                      <div className="text-xs text-gray-400 font-bold uppercase tracking-widest">
-                        Timeline
-                      </div>
-                      <div className="text-lg font-black text-gray-900">
-                        {service.timeline}
-                      </div>
-                    </div>
-                  </div>
 
                   <ul className="space-y-3 mb-8">
-                    {service.features.map((feature, idx) => (
+                    {(service.features || []).map((feature: string, idx: number) => (
                       <li key={idx} className="flex items-start gap-3">
                         <HugeiconsIcon
                           icon={CheckmarkCircle02Icon}
@@ -151,6 +107,12 @@ export default function ServicesPage() {
                       </li>
                     ))}
                   </ul>
+
+                  {service.deliverables?.length ? (
+                    <div className="text-sm text-gray-500 font-semibold mb-6">
+                      Deliverables: {service.deliverables.join(", ")}
+                    </div>
+                  ) : null}
                 </div>
               ))}
             </div>

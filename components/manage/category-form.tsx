@@ -2,7 +2,8 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { ArrowLeft, Save, Loader2 } from "lucide-react";
+import { HugeiconsIcon } from "@hugeicons/react";
+import { FloppyDiskIcon, Loading03Icon } from "@hugeicons/core-free-icons";
 import { createClient } from "@/lib/supabase/client";
 import slugify from "slugify";
 import { toast } from "sonner";
@@ -25,9 +26,6 @@ export function CategoryForm({
   const [description, setDescription] = useState(
     initialData?.description || "",
   );
-  const [displayOrder, setDisplayOrder] = useState(
-    initialData?.display_order?.toString() || "0",
-  );
   const [icon, setIcon] = useState(initialData?.icon || "FolderFavouriteIcon");
 
   // Sync slug with name only when creating
@@ -48,11 +46,22 @@ export function CategoryForm({
     const supabase = createClient();
 
     try {
+      let nextOrder = initialData?.display_order ?? 0;
+      if (!isEditing) {
+        const { data: lastCategory } = await supabase
+          .from("categories")
+          .select("display_order")
+          .order("display_order", { ascending: false })
+          .limit(1)
+          .single();
+        nextOrder = (lastCategory?.display_order ?? 0) + 1;
+      }
+
       const categoryData = {
         name,
         slug,
         description,
-        display_order: parseInt(displayOrder),
+        display_order: nextOrder,
         icon,
       };
 
@@ -134,30 +143,17 @@ export function CategoryForm({
           />
         </div>
 
-        <div className="grid grid-cols-2 gap-8">
-          <div className="space-y-3">
-            <label className="text-sm font-black text-gray-900 uppercase tracking-widest px-1">
-              Display Order
-            </label>
-            <input
-              type="number"
-              value={displayOrder}
-              onChange={(e) => setDisplayOrder(e.target.value)}
-              className="w-full px-6 py-4 bg-gray-50 border border-gray-100 rounded-2xl focus:outline-none font-bold text-gray-900"
-            />
-          </div>
-          <div className="space-y-3">
-            <label className="text-sm font-black text-gray-900 uppercase tracking-widest px-1">
-              Icon Name (Hugeicons)
-            </label>
-            <input
-              type="text"
-              value={icon}
-              onChange={(e) => setIcon(e.target.value)}
-              placeholder="FolderFavouriteIcon"
-              className="w-full px-6 py-4 bg-gray-50 border border-gray-100 rounded-2xl focus:outline-none font-bold text-gray-900"
-            />
-          </div>
+        <div className="space-y-3">
+          <label className="text-sm font-black text-gray-900 uppercase tracking-widest px-1">
+            Icon Name (Hugeicons)
+          </label>
+          <input
+            type="text"
+            value={icon}
+            onChange={(e) => setIcon(e.target.value)}
+            placeholder="FolderFavouriteIcon"
+            className="w-full px-6 py-4 bg-gray-50 border border-gray-100 rounded-2xl focus:outline-none font-bold text-gray-900"
+          />
         </div>
 
         <button
@@ -166,9 +162,15 @@ export function CategoryForm({
           className="w-full bg-gray-900 hover:bg-black text-white py-6 rounded-[2rem] font-black uppercase tracking-widest flex items-center justify-center gap-4 transition-all shadow-2xl shadow-gray-200 disabled:opacity-50 group hover:-translate-y-1 active:translate-y-0"
         >
           {loading ? (
-            <Loader2 className="w-6 h-6 animate-spin" />
+            <HugeiconsIcon
+              icon={Loading03Icon}
+              className="w-6 h-6 animate-spin"
+            />
           ) : (
-            <Save className="w-6 h-6 group-hover:scale-110 transition-transform" />
+            <HugeiconsIcon
+              icon={FloppyDiskIcon}
+              className="w-6 h-6 group-hover:scale-110 transition-transform"
+            />
           )}
           {loading
             ? "Saving..."

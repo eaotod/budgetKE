@@ -1,7 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import { Trash2 } from "lucide-react";
+import { HugeiconsIcon } from "@hugeicons/react";
+import { Delete02Icon } from "@hugeicons/core-free-icons";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -19,7 +20,7 @@ import { toast } from "sonner";
 
 interface DeleteActionProps {
   id: string;
-  type: "products" | "categories" | "bundles";
+  type: "products" | "categories" | "bundles" | "services";
   name: string;
 }
 
@@ -45,7 +46,7 @@ export function DeleteAction({ id, type, name }: DeleteActionProps) {
           onSelect={(e) => e.preventDefault()}
           className="flex items-center gap-2 cursor-pointer text-red-600 focus:text-white focus:bg-red-600 font-medium p-2 rounded-lg transition-all"
         >
-          <Trash2 className="w-4 h-4" />
+          <HugeiconsIcon icon={Delete02Icon} className="w-4 h-4" />
           Delete
         </DropdownMenuItem>
       </AlertDialogTrigger>

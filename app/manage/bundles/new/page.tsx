@@ -1,5 +1,6 @@
 import Link from "next/link";
-import { ArrowLeft } from "lucide-react";
+import { HugeiconsIcon } from "@hugeicons/react";
+import { ArrowLeft01Icon } from "@hugeicons/core-free-icons";
 import { BundleForm } from "@/components/manage/bundle-form";
 
 export default function NewBundlePage() {
@@ -10,7 +11,10 @@ export default function NewBundlePage() {
           href="/manage/bundles"
           className="p-4 bg-white hover:bg-gray-900 hover:text-white rounded-[1.5rem] border border-gray-100 transition-all text-gray-400 shadow-xl shadow-gray-200/50 group"
         >
-          <ArrowLeft className="w-6 h-6 group-hover:-translate-x-1 transition-transform" />
+          <HugeiconsIcon
+            icon={ArrowLeft01Icon}
+            className="w-6 h-6 group-hover:-translate-x-1 transition-transform"
+          />
         </Link>
         <div>
           <h1 className="text-3xl font-black text-gray-900 tracking-tight flex items-center gap-3">

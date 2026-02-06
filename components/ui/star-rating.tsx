@@ -1,6 +1,7 @@
 "use client";
 
-import { Star } from "lucide-react";
+import { HugeiconsIcon } from "@hugeicons/react";
+import { StarIcon } from "@hugeicons/core-free-icons";
 import { cn } from "@/lib/utils";
 
 interface StarRatingProps {
@@ -56,20 +57,19 @@ export function StarRating({
               )}
             >
               {/* Background star (empty) */}
-              <Star
-                className={cn(
-                  sizeClasses[size],
-                  "text-gray-200"
-                )}
+              <HugeiconsIcon
+                icon={StarIcon}
+                className={cn(sizeClasses[size], "text-gray-200")}
               />
 
               {/* Filled star overlay */}
               {(filled || partial) && (
-                <Star
+                <HugeiconsIcon
+                  icon={StarIcon}
                   className={cn(
                     sizeClasses[size],
-                    "absolute inset-0 text-yellow-400 fill-yellow-400",
-                    partial && "clip-path-half"
+                    "absolute inset-0 text-yellow-400",
+                    partial && "clip-path-half",
                   )}
                   style={
                     partial
@@ -112,7 +112,7 @@ export function StarRatingCompact({
 }) {
   return (
     <div className={cn("flex items-center gap-1 text-sm", className)}>
-      <Star className="w-4 h-4 text-yellow-400 fill-yellow-400" />
+      <HugeiconsIcon icon={StarIcon} className="w-4 h-4 text-yellow-400" />
       <span className="font-medium text-gray-700">{rating.toFixed(1)}</span>
       {reviewCount !== undefined && (
         <span className="text-gray-500">({reviewCount})</span>

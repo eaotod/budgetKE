@@ -6,7 +6,12 @@ import { Navbar } from "@/components/layout/navbar";
 import { Footer } from "@/components/layout/footer";
 import { getBlogBySlug, getBlogSlugs, getLatestBlogs } from "@/lib/blog";
 import { Breadcrumbs } from "@/components/ui/breadcrumbs";
-import { Calendar, Clock, ChevronRight, ArrowLeft } from "lucide-react";
+import { HugeiconsIcon } from "@hugeicons/react";
+import {
+  ArrowLeft01Icon,
+  Calendar01Icon,
+  Clock01Icon,
+} from "@hugeicons/core-free-icons";
 
 interface BlogPostPageProps {
   params: Promise<{ slug: string }>;
@@ -74,7 +79,7 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
 
               <div className="flex flex-wrap items-center gap-6 text-gray-500 text-sm font-medium border-y border-gray-100 py-6">
                 <div className="flex items-center gap-2">
-                  <Calendar className="w-4 h-4 text-primary" />
+                  <HugeiconsIcon icon={Calendar01Icon} className="w-4 h-4 text-primary" />
                   {new Date(blog.date).toLocaleDateString("en-KE", {
                     year: "numeric",
                     month: "long",
@@ -82,7 +87,7 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
                   })}
                 </div>
                 <div className="flex items-center gap-2">
-                  <Clock className="w-4 h-4 text-primary" />
+                  <HugeiconsIcon icon={Clock01Icon} className="w-4 h-4 text-primary" />
                   {blog.readingTime}
                 </div>
               </div>
@@ -113,7 +118,10 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
                 href="/blog"
                 className="inline-flex items-center gap-2 text-gray-900 font-bold hover:text-primary transition-colors group"
               >
-                <ArrowLeft className="w-5 h-5 transition-transform group-hover:-translate-x-1" />
+                <HugeiconsIcon
+                  icon={ArrowLeft01Icon}
+                  className="w-5 h-5 transition-transform group-hover:-translate-x-1"
+                />
                 Back to Blog
               </Link>
             </div>

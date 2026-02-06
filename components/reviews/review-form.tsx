@@ -3,7 +3,6 @@
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Loader2, CheckCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
@@ -87,7 +86,10 @@ export function ReviewForm({
     return (
       <div className="bg-green-50 border border-green-200 rounded-xl p-8 text-center">
         <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
-          <CheckCircle className="w-8 h-8 text-green-600" />
+          <HugeiconsIcon
+            icon={HugeIcons.CheckmarkCircle02Icon}
+            className="w-8 h-8 text-green-600"
+          />
         </div>
         <h3 className="text-lg font-semibold text-green-900 mb-2">
           Thank you for your review!
@@ -174,7 +176,12 @@ export function ReviewForm({
         disabled={isSubmitting}
         className="w-full h-16 text-sm font-black uppercase tracking-widest rounded-full bg-primary hover:bg-primary/90 text-white shadow-xl shadow-primary/20 transition-all active:scale-[0.98]"
       >
-        {isSubmitting && <Loader2 className="w-5 h-5 mr-3 animate-spin" />}
+        {isSubmitting && (
+          <HugeiconsIcon
+            icon={HugeIcons.Loading03Icon}
+            className="w-5 h-5 mr-3 animate-spin"
+          />
+        )}
         {isSubmitting ? "Submitting..." : "Post Review"}
       </Button>
 

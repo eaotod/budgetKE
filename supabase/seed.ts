@@ -1,7 +1,10 @@
 import { createClient } from "@supabase/supabase-js";
 import * as dotenv from "dotenv";
 import path from "path";
-import { products, categories, bundles, testimonials, globalFaqs } from "../lib/data";
+import { testimonials, globalFaqs } from "../lib/data";
+import { allSeedProducts } from "./seed-products";
+import { seedBundles, seedReviews } from "./seed-bundles-reviews";
+import { seedCategories, services } from "./seed-services";
 
 // Load environment variables from .env file
 dotenv.config({ path: path.resolve(process.cwd(), ".env") });
@@ -35,13 +38,14 @@ async function seed() {
   const { error: delBundleErr } = await supabase.from("bundles").delete().neq("id", "none");
   const { error: delProdErr } = await supabase.from("products").delete().neq("id", "none");
   const { error: delCatErr } = await supabase.from("categories").delete().neq("id", "none");
+  const { error: delServicesErr } = await supabase.from("services").delete().neq("id", "none");
 
   if (delCatErr) console.warn("Note: Error while clearing categories (might be empty):", delCatErr.message);
 
   // 2. Insert Categories
   console.log("📦 Inserting categories...");
   const { error: catError } = await supabase.from("categories").insert(
-    categories.map(c => ({
+    seedCategories.map(c => ({
       id: c.id,
       name: c.name,
       slug: c.slug,
@@ -55,10 +59,36 @@ async function seed() {
   );
   if (catError) throw catError;
 
+  // 3. Insert Services
+  console.log("🛠️ Inserting services...");
+  const { error: servicesError } = await supabase.from("services").insert(
+    services.map((s) => ({
+      id: s.id,
+      name: s.name,
+      slug: s.slug,
+      tier: s.tier,
+      price_min: s.priceMin,
+      price_max: s.priceMax,
+      currency: s.currency,
+      timeline: s.timeline,
+      short_description: s.shortDescription,
+      description: s.description,
+      features: s.features,
+      deliverables: s.deliverables,
+      status: s.status,
+    })),
+  );
+  if (servicesError) {
+    console.warn(
+      "Note: services not seeded (missing table). Apply schema/migrations, then re-run seed.",
+      servicesError.message,
+    );
+  }
+
   // 3. Insert Products
   console.log("🛒 Inserting products...");
   const { error: prodError } = await supabase.from("products").insert(
-    products.map(p => ({
+    allSeedProducts.map(p => ({
       id: p.id,
       name: p.name,
       slug: p.slug,
@@ -97,7 +127,7 @@ async function seed() {
   // 4. Insert Bundles
   console.log("🎁 Inserting bundles...");
   const { error: bundleError } = await supabase.from("bundles").insert(
-    bundles.map(b => ({
+    seedBundles.map(b => ({
       id: b.id,
       name: b.name,
       slug: b.slug,
@@ -116,7 +146,30 @@ async function seed() {
   );
   if (bundleError) throw bundleError;
 
-  // 5. Insert Testimonials
+  // 5. Insert Reviews (seeded as approved)
+  console.log("⭐ Inserting reviews...");
+  const reviewPayload = seedReviews.map((r) => ({
+    product_id: r.productId,
+    order_id: null,
+    author_name: r.authorName,
+    author_email: r.authorEmail,
+    author_avatar: r.authorAvatar,
+    author_location: r.authorLocation,
+    rating: r.rating,
+    title: r.title,
+    content: r.content,
+    is_verified: r.isVerified,
+    is_approved: true,
+    is_featured: r.isFeatured,
+    helpful_count: r.helpfulCount,
+    admin_response: r.adminResponse,
+    admin_responded_at: r.adminRespondedAt,
+    created_at: r.createdAt,
+  }));
+  const { error: reviewError } = await supabase.from("reviews").insert(reviewPayload);
+  if (reviewError) throw reviewError;
+
+  // 6. Insert Testimonials
   console.log("💬 Inserting testimonials...");
   const { error: testError } = await supabase.from("testimonials").insert(
     testimonials.map(t => ({
@@ -136,7 +189,7 @@ async function seed() {
   );
   if (testError) throw testError;
 
-  // 6. Insert Global FAQs
+  // 7. Insert Global FAQs
   console.log("❓ Inserting global FAQs...");
   const { error: faqError } = await supabase.from("global_faqs").insert(
     globalFaqs.map(f => ({

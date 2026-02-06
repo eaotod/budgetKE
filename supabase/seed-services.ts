@@ -2,7 +2,7 @@
 // BudgetKE Seed Data - Categories & Services
 // ============================================
 
-import type { Category } from "./types";
+import type { Category, Service } from "../lib/types";
 
 // Extended Categories
 export const seedCategories: Category[] = [
@@ -11,7 +11,7 @@ export const seedCategories: Category[] = [
     name: "Personal Finance",
     slug: "personal-finance",
     description: "Take control of your money with budget trackers, savings planners, and debt management tools designed for Kenyan households.",
-    icon: "Wallet",
+    icon: "Wallet01Icon",
     displayOrder: 1,
     productCount: 5,
     metaTitle: "Personal Finance Templates Kenya | Budget Planners & Trackers",
@@ -22,7 +22,7 @@ export const seedCategories: Category[] = [
     name: "Business Tools",
     slug: "business-tools",
     description: "Professional bookkeeping, inventory, and financial management tools for Kenyan SMEs and entrepreneurs.",
-    icon: "Briefcase",
+    icon: "Briefcase01Icon",
     displayOrder: 2,
     productCount: 5,
     metaTitle: "Business Templates Kenya | Bookkeeping & Inventory Tools",
@@ -33,52 +33,24 @@ export const seedCategories: Category[] = [
     name: "Industry Specific",
     slug: "industry-specific",
     description: "Specialized templates for specific Kenyan industries including Mtumba, hospitality, retail, and real estate.",
-    icon: "Building2",
+    icon: "Building01Icon",
     displayOrder: 3,
     productCount: 17,
     metaTitle: "Industry Templates Kenya | Mtumba, Hospitality & Retail",
     metaDescription: "Specialized business templates for Kenyan industries. Track inventory, manage finances, and grow your business.",
   },
   {
-    id: "bundles",
-    name: "Template Bundles",
-    slug: "bundles",
-    description: "Save more with our curated template bundles. Get multiple tools at a discounted price.",
-    icon: "Package",
+    id: "advanced-solutions",
+    name: "Advanced Solutions",
+    slug: "advanced-solutions",
+    description: "Premium workflows, automation-ready toolkits, and advanced systems for growing teams and complex operations.",
+    icon: "Settings02Icon",
     displayOrder: 4,
-    productCount: 4,
-    metaTitle: "Template Bundles Kenya | Save on Multiple Tools",
-    metaDescription: "Get the best value with BudgetKE template bundles. Multiple tools at discounted prices. M-Pesa ready.",
-  },
-  {
-    id: "custom-services",
-    name: "Custom Services",
-    slug: "custom-services",
-    description: "Get custom templates and PWA applications built specifically for your business needs.",
-    icon: "Wrench",
-    displayOrder: 5,
-    productCount: 6,
-    metaTitle: "Custom Template & PWA Development Kenya",
-    metaDescription: "Custom Excel templates and offline PWA applications built for your specific business requirements.",
+    productCount: 0,
+    metaTitle: "Advanced Business Solutions Kenya | Automation & Systems",
+    metaDescription: "Advanced financial and operational systems for established Kenyan businesses. Built for scale.",
   },
 ];
-
-// Service Types
-export interface Service {
-  id: string;
-  name: string;
-  slug: string;
-  tier: "basic" | "advanced" | "premium";
-  priceMin: number;
-  priceMax: number;
-  currency: string;
-  timeline: string;
-  shortDescription: string;
-  description: string;
-  features: string[];
-  deliverables: string[];
-  status: "active" | "draft";
-}
 
 export const services: Service[] = [
   {

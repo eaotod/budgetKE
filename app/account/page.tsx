@@ -11,18 +11,8 @@ import {
   ShoppingBag01Icon,
   UserCircleIcon,
 } from "@hugeicons/core-free-icons";
-
-// Mock data for initial UI
-const mockOrders = [
-  {
-    id: "ORD-1234-5678",
-    date: "Feb 14, 2026",
-    items: ["Ultimate Budget Planner 2026"],
-    total: 799,
-    status: "Completed",
-    downloadLink: "#",
-  },
-];
+import { createAdminClient } from "@/lib/supabase/admin";
+import type { Order } from "@/lib/types";
 
 export default async function AccountPage() {
   const cookieStore = await cookies();
@@ -45,6 +35,27 @@ export default async function AccountPage() {
   if (!user) {
     redirect("/login");
   }
+
+  const adminSupabase = createAdminClient();
+  const { data: orders = [] } = await adminSupabase
+    .from("orders")
+    .select("*")
+    .eq("email", user.email)
+    .order("created_at", { ascending: false });
+
+  const formattedOrders = (orders as Order[]).map((order) => ({
+    id: order.orderNumber || order.order_number || order.id,
+    date: order.createdAt || (order.created_at as unknown as string),
+    total: order.total,
+    status: order.paymentStatus || (order.payment_status as any),
+    downloadToken: (order as any).download_token || order.downloadToken,
+    items: (order.items || []).map((item) => ({
+      name: item.name,
+      productId: item.productId,
+      bundleId: item.bundleId,
+      type: item.type,
+    })),
+  }));
 
   return (
     <>
@@ -88,10 +99,9 @@ export default async function AccountPage() {
                 </div>
 
                 <div className="p-8">
-                  {/* Empty State Logic (using mock for now so typically valid) */}
-                  {mockOrders.length > 0 ? (
+                  {formattedOrders.length > 0 ? (
                     <div className="space-y-6">
-                      {mockOrders.map((order) => (
+                      {formattedOrders.map((order) => (
                         <div
                           key={order.id}
                           className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-6 rounded-2xl bg-gray-50 border border-gray-100"
@@ -106,20 +116,38 @@ export default async function AccountPage() {
                               </span>
                             </div>
                             <p className="text-sm text-gray-500 mb-1">
-                              {order.date} • KES {order.total}
+                              {new Date(order.date).toLocaleDateString("en-KE", {
+                                year: "numeric",
+                                month: "short",
+                                day: "numeric",
+                              })}{" "}
+                              • KES {order.total.toLocaleString()}
                             </p>
                             <p className="text-sm font-medium text-gray-700">
-                              {order.items.join(", ")}
+                              {order.items.map((i) => i.name).join(", ")}
                             </p>
                           </div>
-                          <Button size="sm" className="rounded-xl font-bold">
-                            <HugeiconsIcon
-                              icon={Download01Icon}
-                              size={16}
-                              className="mr-2"
-                            />
-                            Download
-                          </Button>
+                          <div className="flex flex-wrap gap-2">
+                            {order.items.map((item, idx) => (
+                              <form
+                                key={idx}
+                                action={`/api/download/${order.downloadToken}/${item.productId || item.bundleId}`}
+                              >
+                                <Button
+                                  size="sm"
+                                  className="rounded-xl font-bold"
+                                  disabled={!order.downloadToken}
+                                >
+                                  <HugeiconsIcon
+                                    icon={Download01Icon}
+                                    size={16}
+                                    className="mr-2"
+                                  />
+                                  Download {item.type}
+                                </Button>
+                              </form>
+                            ))}
+                          </div>
                         </div>
                       ))}
                     </div>

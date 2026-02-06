@@ -2,7 +2,7 @@
 // BudgetKE Product Seed - Tier 1 & 2 Products
 // ============================================
 
-import type { Product } from "./types";
+import type { Product } from "../lib/types";
 
 // Helper to generate consistent product structure
 const createProduct = (
@@ -40,8 +40,8 @@ const createProduct = (
     "Automatic calculations & charts",
     "Compatible with Windows, Mac, Android, iOS",
   ],
-  images: [`/images/products/${slug}/cover.jpg`],
-  thumbnailUrl: `/images/products/${slug}/thumbnail.jpg`,
+  images: [],
+  thumbnailUrl: "",
   metaTitle: `${name} | BudgetKE`,
   metaDescription: shortDescription,
   keywords: [name.toLowerCase(), categoryId],

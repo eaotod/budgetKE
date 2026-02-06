@@ -9,6 +9,7 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
   try {
     const resolvedParams = await params;
     const { token, productId } = resolvedParams;
+    const bucketName = "budgetke";
 
     const supabase = createAdminClient();
 
@@ -69,10 +70,12 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
       .update({ download_count: downloadCount + 1 })
       .eq("id", order.id);
 
-    // If file is in Supabase Storage, generate signed URL
-    if (product.file_url.includes("supabase.co/storage")) {
+    const fileUrl = product.file_url;
+
+    // If file is in Supabase Storage via public URL, generate signed URL
+    if (fileUrl.includes("supabase.co/storage")) {
       // Extract bucket and path from URL
-      const urlParts = product.file_url.split("/storage/v1/object/public/");
+      const urlParts = fileUrl.split("/storage/v1/object/public/");
       if (urlParts.length === 2) {
         const [bucket, ...pathParts] = urlParts[1].split("/");
         const filePath = pathParts.join("/");
@@ -87,8 +90,19 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
       }
     }
 
+    // If we stored a raw storage path, sign it directly
+    if (!fileUrl.startsWith("http")) {
+      const { data: signedUrl } = await supabase.storage
+        .from(bucketName)
+        .createSignedUrl(fileUrl, 60 * 5);
+
+      if (signedUrl) {
+        return NextResponse.redirect(signedUrl.signedUrl);
+      }
+    }
+
     // For external URLs, redirect directly
-    return NextResponse.redirect(product.file_url);
+    return NextResponse.redirect(fileUrl);
   } catch (error) {
     console.error("Download error:", error);
     return NextResponse.json({ error: "Internal server error" }, { status: 500 });

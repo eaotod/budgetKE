@@ -1,6 +1,7 @@
 "use client";
 
-import { useState } from "react";
+import { useMemo, useState } from "react";
+import { useSearchParams } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { Navbar } from "@/components/layout/navbar";
 import { Footer } from "@/components/layout/footer";
@@ -11,15 +12,23 @@ import Link from "next/link";
 
 export default function LoginPage() {
   const [isLoading, setIsLoading] = useState(false);
+  const searchParams = useSearchParams();
+  const nextPath = useMemo(() => {
+    const next = searchParams.get("next");
+    return next && next.startsWith("/") ? next : "/account";
+  }, [searchParams]);
   const supabase = createClient();
 
   const handleGoogleLogin = async () => {
     setIsLoading(true);
     try {
+      const redirectTo = `${window.location.origin}/auth/callback?next=${encodeURIComponent(
+        nextPath,
+      )}`;
       const { error } = await supabase.auth.signInWithOAuth({
         provider: "google",
         options: {
-          redirectTo: `${window.location.origin}/auth/callback`,
+          redirectTo,
         },
       });
       if (error) throw error;

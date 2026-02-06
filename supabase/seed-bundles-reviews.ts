@@ -2,7 +2,7 @@
 // BudgetKE Seed Data - Bundles & Reviews
 // ============================================
 
-import type { Bundle, Review } from "./types";
+import type { Bundle, Review } from "../lib/types";
 
 // Bundles
 export const seedBundles: Bundle[] = [
@@ -16,8 +16,8 @@ export const seedBundles: Bundle[] = [
     originalPrice: 3795,
     bundlePrice: 2499,
     savings: 1296,
-    images: ["/images/bundles/personal-finance/cover.jpg"],
-    thumbnailUrl: "/images/bundles/personal-finance/thumbnail.jpg",
+    images: [],
+    thumbnailUrl: "",
     isFeatured: true,
     status: "active",
     metaTitle: "Personal Finance Bundle Kenya | 5 Tools for One Price",
@@ -33,8 +33,8 @@ export const seedBundles: Bundle[] = [
     originalPrice: 4995,
     bundlePrice: 3499,
     savings: 1496,
-    images: ["/images/bundles/business-starter/cover.jpg"],
-    thumbnailUrl: "/images/bundles/business-starter/thumbnail.jpg",
+    images: [],
+    thumbnailUrl: "",
     isFeatured: true,
     status: "active",
     metaTitle: "Business Starter Bundle Kenya | 5 Essential SME Tools",
@@ -50,8 +50,8 @@ export const seedBundles: Bundle[] = [
     originalPrice: 8790,
     bundlePrice: 4999,
     savings: 3791,
-    images: ["/images/bundles/complete-suite/cover.jpg"],
-    thumbnailUrl: "/images/bundles/complete-suite/thumbnail.jpg",
+    images: [],
+    thumbnailUrl: "",
     isFeatured: true,
     status: "active",
     metaTitle: "Complete Finance Suite Kenya | All 10 Templates",
@@ -67,8 +67,8 @@ export const seedBundles: Bundle[] = [
     originalPrice: 9995,
     bundlePrice: 5999,
     savings: 3996,
-    images: ["/images/bundles/industry-pro/cover.jpg"],
-    thumbnailUrl: "/images/bundles/industry-pro/thumbnail.jpg",
+    images: [],
+    thumbnailUrl: "",
     isFeatured: false,
     status: "active",
     metaTitle: "Industry Pro Bundle Kenya | Choose 5 Specialized Templates",

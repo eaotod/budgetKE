@@ -1,14 +1,14 @@
 import Link from "next/link";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { ArrowLeft01Icon } from "@hugeicons/core-free-icons";
-import { CategoryForm } from "@/components/manage/category-form";
+import { ServiceForm } from "@/components/manage/service-form";
 
-export default function NewCategoryPage() {
+export default function NewServicePage() {
   return (
     <div className="space-y-12 pb-20">
       <div className="flex items-center gap-6">
         <Link
-          href="/manage/categories"
+          href="/manage/services"
           className="p-4 bg-white hover:bg-gray-900 hover:text-white rounded-[1.5rem] border border-gray-100 transition-all text-gray-400 shadow-xl shadow-gray-200/50 group"
         >
           <HugeiconsIcon
@@ -17,19 +17,16 @@ export default function NewCategoryPage() {
           />
         </Link>
         <div>
-          <h1 className="text-3xl font-black text-gray-900 tracking-tight flex items-center gap-3">
-            Create New Category
-            <span className="text-[10px] font-black text-primary bg-primary/5 px-3 py-1 rounded-full uppercase tracking-widest translate-y-[-2px]">
-              Organization
-            </span>
+          <h1 className="text-3xl font-black text-gray-900 tracking-tight">
+            Create Service
           </h1>
           <p className="text-gray-500 mt-2 font-medium">
-            Organize your products into a new group.
+            Add a new custom service offering.
           </p>
         </div>
       </div>
 
-      <CategoryForm />
+      <ServiceForm />
     </div>
   );
 }

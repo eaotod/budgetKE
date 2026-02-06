@@ -1,43 +1,99 @@
 import {
-  ArrowUpRight,
-  ArrowDownRight,
-  Clock,
-  ExternalLink,
-} from "lucide-react";
-import {
+  Clock01Icon,
   Wallet01Icon,
   ShoppingBag01Icon,
   UserGroupIcon,
   TrendingUp,
 } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
+import { createClient } from "@/lib/supabase/server";
 import { cn } from "@/lib/utils";
+import { format } from "date-fns";
 
-const stats = [
-  {
-    label: "Total Revenue",
-    value: "KES 42,500",
-    icon: Wallet01Icon,
-    trend: "+12.5%",
-    positive: true,
-  },
-  {
-    label: "Total Orders",
-    value: "128",
-    icon: ShoppingBag01Icon,
-    trend: "+8.2%",
-    positive: true,
-  },
-  {
-    label: "Active Customers",
-    value: "1,204",
-    icon: UserGroupIcon,
-    trend: "+5.1%",
-    positive: true,
-  },
-];
+function calcTrend(current: number, previous: number) {
+  if (previous === 0 && current === 0) return { value: "0%", positive: true };
+  if (previous === 0) return { value: "+100%", positive: true };
+  const delta = ((current - previous) / previous) * 100;
+  const rounded = Math.round(delta * 10) / 10;
+  return {
+    value: `${rounded >= 0 ? "+" : ""}${rounded}%`,
+    positive: rounded >= 0,
+  };
+}
 
-export default function ManagePage() {
+export default async function ManagePage() {
+  const supabase = await createClient();
+  const now = new Date();
+  const currentStart = new Date(now);
+  currentStart.setDate(currentStart.getDate() - 30);
+  const previousStart = new Date(now);
+  previousStart.setDate(previousStart.getDate() - 60);
+
+  const { data: recentOrders = [] } = await supabase
+    .from("orders")
+    .select("id, order_number, email, total, payment_status, created_at")
+    .order("created_at", { ascending: false })
+    .limit(8);
+
+  const { data: recentWindow = [] } = await supabase
+    .from("orders")
+    .select("email, total, payment_status, created_at")
+    .gte("created_at", previousStart.toISOString());
+
+  const inCurrent = recentWindow.filter(
+    (o) => new Date(o.created_at) >= currentStart,
+  );
+  const inPrevious = recentWindow.filter(
+    (o) =>
+      new Date(o.created_at) >= previousStart &&
+      new Date(o.created_at) < currentStart,
+  );
+
+  const currentRevenue = inCurrent
+    .filter((o) => o.payment_status === "completed")
+    .reduce((sum, o) => sum + (o.total || 0), 0);
+  const previousRevenue = inPrevious
+    .filter((o) => o.payment_status === "completed")
+    .reduce((sum, o) => sum + (o.total || 0), 0);
+
+  const currentOrders = inCurrent.length;
+  const previousOrders = inPrevious.length;
+
+  const currentCustomers = new Set(
+    inCurrent.map((o) => o.email).filter(Boolean),
+  ).size;
+  const previousCustomers = new Set(
+    inPrevious.map((o) => o.email).filter(Boolean),
+  ).size;
+
+  const revenueTrend = calcTrend(currentRevenue, previousRevenue);
+  const ordersTrend = calcTrend(currentOrders, previousOrders);
+  const customersTrend = calcTrend(currentCustomers, previousCustomers);
+
+  const stats = [
+    {
+      label: "Revenue (30d)",
+      value: `KES ${currentRevenue.toLocaleString()}`,
+      icon: Wallet01Icon,
+      trend: revenueTrend.value,
+      positive: revenueTrend.positive,
+    },
+    {
+      label: "Orders (30d)",
+      value: `${currentOrders}`,
+      icon: ShoppingBag01Icon,
+      trend: ordersTrend.value,
+      positive: ordersTrend.positive,
+    },
+    {
+      label: "Customers (30d)",
+      value: `${currentCustomers}`,
+      icon: UserGroupIcon,
+      trend: customersTrend.value,
+      positive: customersTrend.positive,
+    },
+  ];
+
   return (
     <div className="space-y-12">
       <div>
@@ -102,17 +158,60 @@ export default function ManagePage() {
           </button>
         </div>
         <div className="p-10">
-          <div className="flex flex-col items-center justify-center py-20 bg-gray-50/50 rounded-[2rem] border border-dashed border-gray-200">
-            <div className="w-16 h-16 bg-white rounded-full flex items-center justify-center shadow-sm mb-6">
-              <Clock className="w-8 h-8 text-gray-200 animate-pulse" />
+          {recentOrders.length === 0 ? (
+            <div className="flex flex-col items-center justify-center py-20 bg-gray-50/50 rounded-[2rem] border border-dashed border-gray-200">
+              <div className="w-16 h-16 bg-white rounded-full flex items-center justify-center shadow-sm mb-6">
+                <HugeiconsIcon
+                  icon={Clock01Icon}
+                  className="w-8 h-8 text-gray-200 animate-pulse"
+                />
+              </div>
+              <p className="text-gray-400 font-bold tracking-tight">
+                No recent orders yet
+              </p>
+              <p className="text-xs text-gray-300 mt-2">
+                When customers start buying, they'll appear here.
+              </p>
             </div>
-            <p className="text-gray-400 font-bold tracking-tight">
-              No recent orders yet
-            </p>
-            <p className="text-xs text-gray-300 mt-2">
-              When customers start buying, they'll appear here.
-            </p>
-          </div>
+          ) : (
+            <div className="space-y-4">
+              {recentOrders.map((order) => (
+                <div
+                  key={order.id}
+                  className="flex flex-col md:flex-row md:items-center justify-between gap-4 p-5 rounded-2xl border border-gray-100 bg-white"
+                >
+                  <div>
+                    <div className="text-xs font-black text-gray-400 uppercase tracking-widest">
+                      {order.order_number}
+                    </div>
+                    <div className="font-bold text-gray-900 mt-1">
+                      {order.email}
+                    </div>
+                    <div className="text-xs text-gray-400 mt-1">
+                      {format(new Date(order.created_at), "MMM d, yyyy")}
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-4">
+                    <div className="text-sm font-black text-gray-900">
+                      KES {order.total.toLocaleString()}
+                    </div>
+                    <span
+                      className={cn(
+                        "px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-wider",
+                        order.payment_status === "completed"
+                          ? "bg-green-50 text-green-700"
+                          : order.payment_status === "failed"
+                            ? "bg-red-50 text-red-700"
+                            : "bg-gray-100 text-gray-600",
+                      )}
+                    >
+                      {order.payment_status}
+                    </span>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
       </div>
     </div>

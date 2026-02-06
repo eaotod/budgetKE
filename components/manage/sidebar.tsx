@@ -23,6 +23,7 @@ const menuItems = [
     label: "Categories",
     href: "/manage/categories",
   },
+  { icon: Settings02Icon, label: "Services", href: "/manage/services" },
   { icon: AlignLeftIcon, label: "Bundles", href: "/manage/bundles" },
   { icon: Settings02Icon, label: "Settings", href: "/manage/settings" },
 ];
@@ -97,12 +98,17 @@ export function Sidebar() {
 
       {/* Footer / Account */}
       <div className="p-6 mt-auto border-t border-gray-100 bg-gray-50/50">
-        <button className="flex items-center gap-4 px-4 py-4 w-full text-sm font-black text-gray-500 hover:text-red-600 transition-all group rounded-2xl hover:bg-red-50">
-          <div className="p-2 rounded-xl bg-white border border-gray-100 group-hover:border-red-100 group-hover:text-red-600 transition-all">
-            <HugeiconsIcon icon={Logout01Icon} className="w-5 h-5" />
-          </div>
-          <span className="tracking-tight">Sign Out</span>
-        </button>
+        <form action="/auth/signout" method="post">
+          <button
+            type="submit"
+            className="flex items-center gap-4 px-4 py-4 w-full text-sm font-black text-gray-500 hover:text-red-600 transition-all group rounded-2xl hover:bg-red-50"
+          >
+            <div className="p-2 rounded-xl bg-white border border-gray-100 group-hover:border-red-100 group-hover:text-red-600 transition-all">
+              <HugeiconsIcon icon={Logout01Icon} className="w-5 h-5" />
+            </div>
+            <span className="tracking-tight">Sign Out</span>
+          </button>
+        </form>
       </div>
     </aside>
   );

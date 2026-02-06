@@ -1,10 +1,14 @@
 import { Sidebar } from "@/components/manage/sidebar";
+import { requireAdmin } from "@/lib/auth/admin";
 
-export default function ManageLayout({
+export default async function ManageLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  // Enforce admin-only access for all /manage routes
+  await requireAdmin();
+
   return (
     <div className="min-h-screen bg-[#FAFAFA] flex">
       <Sidebar />

@@ -2,7 +2,13 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { Save, Loader2, Package, CheckCircle2 } from "lucide-react";
+import { HugeiconsIcon } from "@hugeicons/react";
+import {
+  CheckmarkCircle02Icon,
+  FloppyDiskIcon,
+  Loading03Icon,
+  PackageIcon,
+} from "@hugeicons/core-free-icons";
 import { createClient } from "@/lib/supabase/client";
 import slugify from "slugify";
 import { toast } from "sonner";
@@ -228,9 +234,9 @@ export function BundleForm({
                     )}
                   >
                     {isSelected ? (
-                      <CheckCircle2 className="w-5 h-5" />
+                      <HugeiconsIcon icon={CheckmarkCircle02Icon} className="w-5 h-5" />
                     ) : (
-                      <Package className="w-5 h-5" />
+                      <HugeiconsIcon icon={PackageIcon} className="w-5 h-5" />
                     )}
                   </div>
                   <div className="flex-1 min-w-0">
@@ -328,9 +334,15 @@ export function BundleForm({
           className="w-full bg-gray-900 hover:bg-black text-white py-6 rounded-[2rem] font-black uppercase tracking-widest flex items-center justify-center gap-4 transition-all shadow-2xl shadow-gray-200 disabled:opacity-50 group hover:-translate-y-1 active:translate-y-0"
         >
           {loading ? (
-            <Loader2 className="w-6 h-6 animate-spin" />
+            <HugeiconsIcon
+              icon={Loading03Icon}
+              className="w-6 h-6 animate-spin"
+            />
           ) : (
-            <Save className="w-6 h-6 group-hover:scale-110 transition-transform" />
+            <HugeiconsIcon
+              icon={FloppyDiskIcon}
+              className="w-6 h-6 group-hover:scale-110 transition-transform"
+            />
           )}
           {loading
             ? "Saving..."

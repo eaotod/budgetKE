@@ -7,6 +7,24 @@
 
 import type { Product, Bundle, Category } from "./types";
 
+function normalizeStringArray(input: any): string[] {
+  if (!input) return [];
+  if (Array.isArray(input)) return input;
+  if (typeof input === "string") {
+    const trimmed = input.trim();
+    if (trimmed.startsWith("[")) {
+      try {
+        const parsed = JSON.parse(trimmed);
+        return Array.isArray(parsed) ? parsed : [];
+      } catch {
+        return [input];
+      }
+    }
+    return [input];
+  }
+  return [];
+}
+
 // ============================================
 // PRODUCT MAPPER
 // ============================================
@@ -30,7 +48,7 @@ export function mapProduct(p: Record<string, any>): Product {
     detailsSpecs: p.details_specs ?? [],
     whyItWorks: p.why_it_works,
     howToUse: p.how_to_use,
-    images: p.images ?? [],
+    images: normalizeStringArray(p.images),
     thumbnailUrl: p.thumbnail_url,
     videoUrl: p.video_url,
     videoThumbnail: p.video_thumbnail,
@@ -102,12 +120,12 @@ export function mapBundle(b: Record<string, any>): Bundle {
     slug: b.slug,
     description: b.description ?? "",
     shortDescription: b.short_description,
-    productIds: b.product_ids ?? [],
+    productIds: normalizeStringArray(b.product_ids),
     products: b.products ? mapProducts(b.products) : undefined,
     originalPrice: b.original_price ?? 0,
     bundlePrice: b.bundle_price ?? 0,
     savings: (b.original_price ?? 0) - (b.bundle_price ?? 0),
-    images: b.images ?? [],
+    images: normalizeStringArray(b.images),
     thumbnailUrl: b.thumbnail_url,
     isFeatured: b.is_featured ?? false,
     status: b.status ?? "draft",

@@ -1,7 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import { Play, X } from "lucide-react";
+import { HugeiconsIcon } from "@hugeicons/react";
+import { Cancel01Icon, PlayIcon } from "@hugeicons/core-free-icons";
 import { cn } from "@/lib/utils";
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { VisuallyHidden } from "@radix-ui/react-visually-hidden";
@@ -67,7 +68,10 @@ export function VideoPlayer({
         {/* Play button overlay */}
         <div className="absolute inset-0 flex items-center justify-center bg-black/30 group-hover:bg-black/40 transition-colors">
           <div className="w-16 h-16 md:w-20 md:h-20 rounded-full bg-white/90 flex items-center justify-center shadow-lg transform group-hover:scale-110 transition-transform">
-            <Play className="w-8 h-8 md:w-10 md:h-10 text-gray-900 ml-1" fill="currentColor" />
+            <HugeiconsIcon
+              icon={PlayIcon}
+              className="w-8 h-8 md:w-10 md:h-10 text-gray-900 ml-1"
+            />
           </div>
         </div>
       </button>
@@ -81,7 +85,7 @@ export function VideoPlayer({
             onClick={() => setIsOpen(false)}
             className="absolute -top-10 right-0 text-white hover:text-gray-300 transition-colors z-50"
           >
-            <X className="w-8 h-8" />
+            <HugeiconsIcon icon={Cancel01Icon} className="w-8 h-8" />
           </button>
           <div className="aspect-video w-full">
             <iframe

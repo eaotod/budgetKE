@@ -1,7 +1,12 @@
 "use client";
 
 import { useState } from "react";
-import { ThumbsUp, CheckCircle, User } from "lucide-react";
+import { HugeiconsIcon } from "@hugeicons/react";
+import {
+  CheckmarkCircle02Icon,
+  ThumbsUpIcon,
+  UserIcon,
+} from "@hugeicons/core-free-icons";
 import { StarRating } from "@/components/ui/star-rating";
 import { Button } from "@/components/ui/button";
 import type { Review } from "@/lib/types";
@@ -42,7 +47,7 @@ export function ReviewCard({ review, onHelpful, className }: ReviewCardProps) {
               className="w-full h-full object-cover"
             />
           ) : (
-            <User className="w-6 h-6 text-gray-400" />
+            <HugeiconsIcon icon={UserIcon} className="w-6 h-6 text-gray-400" />
           )}
         </div>
 
@@ -51,7 +56,7 @@ export function ReviewCard({ review, onHelpful, className }: ReviewCardProps) {
             <span className="font-semibold text-gray-900">{review.authorName}</span>
             {review.isVerified && (
               <span className="inline-flex items-center gap-1 text-xs font-medium text-green-600 bg-green-50 px-2 py-0.5 rounded-full">
-                <CheckCircle className="w-3 h-3" />
+                <HugeiconsIcon icon={CheckmarkCircle02Icon} className="w-3 h-3" />
                 Verified Purchase
               </span>
             )}
@@ -94,7 +99,10 @@ export function ReviewCard({ review, onHelpful, className }: ReviewCardProps) {
               : "text-gray-500 hover:text-gray-700"
           )}
         >
-          <ThumbsUp className={cn("w-4 h-4", isHelpfulClicked && "fill-current")} />
+          <HugeiconsIcon
+            icon={ThumbsUpIcon}
+            className={cn("w-4 h-4", isHelpfulClicked && "text-primary")}
+          />
           <span>Helpful ({review.helpfulCount + (isHelpfulClicked ? 1 : 0)})</span>
         </button>
       </div>
