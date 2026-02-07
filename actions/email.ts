@@ -37,13 +37,11 @@ export async function sendReceiptEmail({
     });
 
     if (error) {
-      console.error("Resend Error:", error);
       return { success: false, error };
     }
 
     return { success: true, data };
   } catch (error) {
-    console.error("Email Sending Failed:", error);
     return { success: false, error };
   }
 }

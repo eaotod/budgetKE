@@ -2,35 +2,10 @@ import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 
-function parseAdminEmails(raw: string | undefined) {
-  if (!raw) return [];
-  return raw
-    .split(",")
-    .map((email) => email.trim().toLowerCase())
-    .filter(Boolean);
-}
-
-export function getAdminEmails() {
-  const single = process.env.ADMIN_EMAIL;
-  const multiple = process.env.ADMIN_EMAILS;
-  const emails = [
-    ...parseAdminEmails(single),
-    ...parseAdminEmails(multiple),
-  ];
-
-  return Array.from(new Set(emails));
-}
-
-export function isAdminEmail(email?: string | null) {
-  if (!email) return false;
-  const adminEmails = getAdminEmails();
-  return adminEmails.includes(email.toLowerCase());
-}
-
-function hasAdminRole(user: { email?: string | null; user_metadata?: any } | null) {
+function hasAdminRole(user: { user_metadata?: unknown } | null) {
   if (!user) return false;
-  const role = user.user_metadata?.role;
-  return role === "admin" || isAdminEmail(user.email);
+  const metadata = (user.user_metadata ?? {}) as Record<string, unknown>;
+  return metadata.role === "admin";
 }
 
 export async function requireAdmin() {

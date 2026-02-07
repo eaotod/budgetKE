@@ -9,12 +9,14 @@ import { cn } from "@/lib/utils";
 
 const ITEMS_PER_PAGE = 12;
 
+import { Product, Category } from "@/lib/types";
+
 export function ProductsSection({
   products: allProducts,
   categories,
 }: {
-  products: any[];
-  categories: any[];
+  products: Product[];
+  categories: Category[];
 }) {
   const [activeCategory, setActiveCategory] = useState<string>("all");
   const [currentPage, setCurrentPage] = useState(1);
@@ -82,7 +84,7 @@ export function ProductsSection({
         {paginatedProducts.length > 0 ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
             {paginatedProducts.map((product) => (
-              <ProductCard key={product.id} product={product as any} />
+              <ProductCard key={product.id} product={product} />
             ))}
           </div>
         ) : (
@@ -94,8 +96,8 @@ export function ProductsSection({
               No templates found
             </h3>
             <p className="text-gray-500 max-w-xs mx-auto">
-              Try adjusting your filters or search keywords to find what you're
-              looking for.
+              Try adjusting your filters or search keywords to find what
+              you&apos;re looking for.
             </p>
             <Button
               variant="link"

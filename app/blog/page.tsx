@@ -1,71 +1,75 @@
-import { Metadata } from "next";
-import Link from "next/link";
-import Image from "next/image";
+import { getBlogPosts } from "@/lib/blog";
+import { FeaturedPost } from "@/components/blog/featured-post";
+import { BlogCard } from "@/components/blog/blog-card";
 import { Navbar } from "@/components/layout/navbar";
 import { Footer } from "@/components/layout/footer";
-import { getAllBlogs } from "@/lib/blog";
-import { Breadcrumbs } from "@/components/ui/breadcrumbs";
 
-export const metadata: Metadata = {
-  title: "Finance & Budgeting Blog | BudgetKE Insights",
+// Force static generation
+export const dynamic = "force-static";
+
+export const metadata = {
+  title: "Blog - Expert Tips for Finance & Business | BudgetKE",
   description:
-    "Learn how to manage your money, track expenses, and grow your business in Kenya.",
+    "Helpful articles, guides, and stories to help you manage your finances and build your business.",
 };
 
 export default function BlogPage() {
-  const blogs = getAllBlogs();
+  const allPosts = getBlogPosts();
+  const featuredPost = allPosts.find((p) => p.featured) || allPosts[0];
+  const regularPosts = allPosts.filter((p) => p.slug !== featuredPost.slug);
 
-  const breadcrumbItems = [{ label: "Blog", href: "/blog" }];
+  // Group by category
+  const categories = [
+    { id: "personal-finance", label: "Personal Finance" },
+    { id: "business-tools", label: "Business Tools" },
+    { id: "industry-specific", label: "Industry Specific" },
+    { id: "advanced-solutions", label: "Advanced Solutions" },
+  ];
 
   return (
     <>
       <Navbar />
-      <main className="md:pt-32 pt-28 pb-20 bg-gray-50/50 min-h-screen">
-        <div className="container mx-auto px-6 max-w-7xl">
-          <Breadcrumbs items={breadcrumbItems} className="mb-8" />
-
-          <div className="max-w-3xl mb-16">
-            <h1 className="text-4xl md:text-6xl font-black text-gray-900 mb-6 tracking-tight">
-              BudgetKE <span className="text-primary">Journal</span>
+      <main className="min-h-screen bg-gray-50 pt-32 pb-32">
+        <div className="max-w-6xl mx-auto px-6 space-y-24">
+          {/* Header */}
+          <div className="text-center max-w-2xl mx-auto space-y-6">
+            <h1 className="text-4xl md:text-5xl lg:text-6xl font-black text-gray-900 tracking-tight">
+              The BudgetKE Blog
             </h1>
             <p className="text-lg md:text-xl text-gray-500 font-medium leading-relaxed">
-              Insights, guides, and tips to help you master your finances and
-              grow your business in the Kenyan landscape.
+              Whether you&apos;re managing personal finances or growing a
+              business, our blog is filled with helpful guides and strategies.
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-12 lg:gap-16">
-            {blogs.map((blog) => (
-              <article key={blog.id} className="flex flex-col group">
-                <Link
-                  href={`/blog/${blog.slug}`}
-                  className="block relative aspect-16/10 overflow-hidden rounded-[2rem] mb-6 bg-gray-50 border border-gray-100 transition-all hover:shadow-xl hover:shadow-gray-200/50"
-                >
-                  <Image
-                    src={blog.coverImage}
-                    alt={blog.title}
-                    fill
-                    className="object-cover transition-transform duration-500 group-hover:scale-105"
-                  />
-                </Link>
+          {/* Featured Post */}
+          {featuredPost && <FeaturedPost post={featuredPost} />}
 
-                <div className="flex flex-col">
-                  <div className="text-primary text-[11px] font-black uppercase tracking-[0.2em] mb-3">
-                    {blog.categoryName || blog.category}
+          {/* Categories */}
+          <div className="space-y-24">
+            {categories.map((category) => {
+              const categoryPosts = regularPosts.filter(
+                (post) => post.category === category.id,
+              );
+
+              if (categoryPosts.length === 0) return null;
+
+              return (
+                <section key={category.id} className="space-y-10">
+                  <div className="flex items-end justify-between border-b border-gray-200 pb-6">
+                    <h2 className="text-3xl font-black text-gray-900 tracking-tight">
+                      {category.label}
+                    </h2>
                   </div>
 
-                  <Link href={`/blog/${blog.slug}`}>
-                    <h2 className="text-2xl font-bold text-gray-900 leading-tight hover:text-primary transition-colors line-clamp-2">
-                      {blog.title}
-                    </h2>
-                  </Link>
-
-                  <p className="mt-4 text-gray-500 text-sm line-clamp-3 leading-relaxed">
-                    {blog.excerpt}
-                  </p>
-                </div>
-              </article>
-            ))}
+                  <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+                    {categoryPosts.map((post) => (
+                      <BlogCard key={post.slug} post={post} />
+                    ))}
+                  </div>
+                </section>
+              );
+            })}
           </div>
         </div>
       </main>

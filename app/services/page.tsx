@@ -10,7 +10,7 @@ import {
 } from "@hugeicons/core-free-icons";
 import Link from "next/link";
 import type { Metadata } from "next";
-import { createAdminClient } from "@/lib/supabase/admin";
+import { getAllServices } from "@/lib/data";
 
 export const metadata: Metadata = {
   title: "Custom Services | BudgetKE",
@@ -19,12 +19,7 @@ export const metadata: Metadata = {
 };
 
 export default async function ServicesPage() {
-  const supabase = createAdminClient();
-  const { data: services = [] } = await supabase
-    .from("services")
-    .select("*")
-    .eq("status", "active")
-    .order("created_at", { ascending: true });
+  const services = getAllServices();
 
   return (
     <>
@@ -65,7 +60,7 @@ export default async function ServicesPage() {
                     {service.name}
                   </h3>
                   <p className="text-sm text-gray-500 font-medium mb-6">
-                    {service.description}
+                    {service.description || service.shortDescription}
                   </p>
 
                     <div className="flex items-center gap-4 mb-6 pb-6 border-b border-gray-100">
@@ -74,11 +69,9 @@ export default async function ServicesPage() {
                           Price
                         </div>
                         <div className="text-lg font-black text-gray-900">
-                          {service.price_min
-                            ? `KES ${service.price_min.toLocaleString()}`
-                            : "Custom"}{" "}
-                          {service.price_max
-                            ? `- KES ${service.price_max.toLocaleString()}`
+                          KES {service.priceMin.toLocaleString()}
+                          {service.priceMax > service.priceMin
+                            ? ` - ${service.priceMax.toLocaleString()}`
                             : ""}
                         </div>
                       </div>
@@ -129,7 +122,7 @@ export default async function ServicesPage() {
               Tell us about your project and we&apos;ll get back to you within
               24 hours with a quote and timeline.
             </p>
-            <Link href="/contact">
+            <Link href="/custom-template">
               <Button
                 size="lg"
                 className="h-16 px-10 text-base font-black rounded-full bg-primary hover:bg-primary/90 text-white shadow-xl shadow-primary/30 uppercase tracking-widest"

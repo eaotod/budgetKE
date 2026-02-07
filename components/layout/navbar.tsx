@@ -39,6 +39,7 @@ export function Navbar() {
 
   // Close mobile menu on route change
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setIsMobileMenuOpen(false);
   }, []);
 
@@ -46,18 +47,7 @@ export function Navbar() {
     const supabase = createClient();
     supabase.auth.getUser().then(({ data }) => {
       const user = data.user;
-      if (user && (user.user_metadata?.role === "admin" || user.email)) {
-        const email = user.email?.toLowerCase() || "";
-        const adminEmails = (
-          process.env.NEXT_PUBLIC_ADMIN_EMAILS || process.env.ADMIN_EMAIL || ""
-        )
-          .split(",")
-          .map((e) => e.trim().toLowerCase())
-          .filter(Boolean);
-        if (user.user_metadata?.role === "admin" || adminEmails.includes(email)) {
-          setIsAdmin(true);
-        }
-      }
+      setIsAdmin(user?.user_metadata?.role === "admin");
     });
   }, []);
 
@@ -120,15 +110,6 @@ export function Navbar() {
               >
                 Blog
               </Link>
-
-              {isAdmin && (
-                <Link
-                  href="/manage"
-                  className="text-sm font-black text-primary hover:text-primary/80 transition-colors uppercase tracking-widest"
-                >
-                  Dashboard
-                </Link>
-              )}
 
               <Link
                 href="/account"

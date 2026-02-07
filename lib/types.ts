@@ -56,9 +56,18 @@ export interface Product {
   comparePrice?: number;
   currency: string;
   
+  // Product Type
+  productType: "template" | "advanced_solution";
+  
   // Content
   shortDescription: string;
   description: string;
+  features?: string[];
+  whatsIncluded?: string[];
+  requirements?: string[];
+  technicalDetails?: Record<string, string>;
+  
+  // Legacy content (for backward compatibility)
   whatYouGet: WhatYouGetItem[];
   detailsSpecs: string[];
   whyItWorks?: string;
@@ -199,6 +208,7 @@ export interface Review {
   content: string;
   isVerified: boolean;
   isApproved: boolean;
+  moderationStatus?: "pending" | "accepted" | "rejected";
   isFeatured: boolean;
   helpfulCount: number;
   adminResponse?: string;

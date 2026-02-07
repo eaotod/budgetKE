@@ -1,6 +1,7 @@
 import { HugeiconsIcon } from "@hugeicons/react";
 import { QuoteDownIcon, StarIcon } from "@hugeicons/core-free-icons";
 import { VideoPlayer } from "@/components/ui/video-player";
+import NextImage from "next/image";
 import type { Testimonial } from "@/lib/types";
 
 // Single testimonial card
@@ -26,7 +27,7 @@ export function TestimonialCard({ testimonial }: { testimonial: Testimonial }) {
 
       {/* Content */}
       <p className="text-gray-600 leading-relaxed grow mb-6">
-        "{testimonial.shortQuote || testimonial.content}"
+        &quot;{testimonial.shortQuote || testimonial.content}&quot;
       </p>
 
       {/* Author */}
@@ -79,7 +80,7 @@ export function VideoTestimonialCard({
       <div className="p-6">
         {/* Quote */}
         <p className="text-gray-600 mb-4">
-          "{testimonial.shortQuote || testimonial.content}"
+          &quot;{testimonial.shortQuote || testimonial.content}&quot;
         </p>
 
         {/* Author */}
@@ -152,9 +153,11 @@ export function WallOfLove({
                 <div className="flex items-center gap-3 mb-4">
                   <div className="w-10 h-10 rounded-full bg-gray-50 border border-gray-100 flex items-center justify-center overflow-hidden">
                     {testimonial.authorAvatar ? (
-                      <img
+                      <NextImage
                         src={testimonial.authorAvatar}
                         alt={testimonial.authorName}
+                        width={40}
+                        height={40}
                         className="w-full h-full object-cover"
                       />
                     ) : (
@@ -173,7 +176,7 @@ export function WallOfLove({
                   </div>
                 </div>
                 <p className="text-sm text-gray-600 leading-relaxed italic line-clamp-3 uppercase font-black tracking-tight">
-                  "{testimonial.shortQuote || testimonial.content}"
+                  &quot;{testimonial.shortQuote || testimonial.content}&quot;
                 </p>
               </div>
             </div>

@@ -1,0 +1,48 @@
+# BudgetKE bundles. productIds are product slugs from content/products.
+- id: personal-finance-bundle
+  name: Personal Finance Bundle
+  slug: personal-finance-bundle
+  description: "Complete personal finance toolkit. Everything you need to master your money: budget tracking, expense logging, and Chamaa management. Save 32% when you buy the bundle."
+  shortDescription: "All 3 personal finance templates. Track budgets, expenses, and manage your Chamaa. Save 32%."
+  productIds:
+    - budget-master-pro
+    - chamaa-manager
+    - expense-tracker-deluxe
+  originalPrice: 2397
+  bundlePrice: 1699
+  isFeatured: true
+  status: active
+  metaTitle: "Personal Finance Bundle - Save 32% | BudgetKE"
+  metaDescription: "Get all 3 personal finance templates: Budget Master Pro, Chamaa Manager, and Expense Tracker. Complete money management toolkit for Kenyans."
+
+- id: business-starter-bundle
+  name: Business Starter Bundle
+  slug: business-starter-bundle
+  description: "Everything a small business needs to get started. Professional bookkeeping, inventory management, and invoicing tools. Save 30% with this bundle."
+  shortDescription: "All 3 business tools. Bookkeeping, inventory, and invoicing. Perfect for SMEs. Save 30%."
+  productIds:
+    - small-business-bookkeeper
+    - inventory-manager-basic
+    - invoice-quote-generator
+  originalPrice: 2897
+  bundlePrice: 1999
+  isFeatured: true
+  status: active
+  metaTitle: "Business Starter Bundle - Save 30% | BudgetKE"
+  metaDescription: "Complete business toolkit: Bookkeeper, Inventory Manager, and Invoice Generator. Everything your SME needs to succeed."
+
+- id: industry-pro-bundle
+  name: Industry Pro Bundle
+  slug: industry-pro-bundle
+  description: "Specialized tools for Kenyan industries. Mtumba tracking, hotel management, and property management. Built for specific business needs. Save 35%."
+  shortDescription: "3 industry-specific templates. Mtumba, Hotel, and Property Management. Save 35%."
+  productIds:
+    - mtumba-business-tracker
+    - hotel-management-suite
+    - landlord-property-manager
+  originalPrice: 6497
+  bundlePrice: 4299
+  isFeatured: false
+  status: active
+  metaTitle: "Industry Pro Bundle - Save 35% | BudgetKE"
+  metaDescription: "Specialized templates for Kenyan businesses: Mtumba Tracker, Hotel Management, and Property Manager. Industry-specific solutions."

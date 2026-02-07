@@ -39,8 +39,7 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
       status: order.payment_status,
       hasDownload: !!order.download_token,
     });
-  } catch (error) {
-    console.error("Order status error:", error);
+  } catch {
     return NextResponse.json(
       { error: "Internal server error" },
       { status: 500 }

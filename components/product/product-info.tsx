@@ -6,11 +6,9 @@ import {
   Shield01Icon,
   ZapIcon,
   Refresh01Icon,
-  ShoppingBasket01Icon,
   Download01Icon,
   Table01Icon,
   Tick01Icon,
-  StarIcon,
 } from "@hugeicons/core-free-icons";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -18,6 +16,7 @@ import { PriceDisplay } from "@/components/ui/price-display";
 import { StarRating } from "@/components/ui/star-rating";
 import { useCartStore } from "@/lib/cart-store";
 import type { Product } from "@/lib/types";
+import { cn } from "@/lib/utils";
 
 interface ProductInfoProps {
   product: Product;
@@ -30,7 +29,8 @@ const trustBadges = [
 ];
 
 export function ProductInfo({ product }: ProductInfoProps) {
-  const addItem = useCartStore((state) => state.addItem);
+  const { addItem, items } = useCartStore();
+  const isInCart = items.some((item) => item.id === product.id);
 
   const handleAddToCart = () => {
     addItem({
@@ -124,31 +124,42 @@ export function ProductInfo({ product }: ProductInfoProps) {
       </div>
 
       {/* CTA Buttons */}
-      <div className="flex flex-col sm:flex-row gap-4">
+      <div className="flex flex-col sm:flex-row gap-4 pt-6 border-t border-gray-100">
         <Button
           size="lg"
-          onClick={handleBuyNow}
-          className="h-16 px-10 bg-primary text-white hover:bg-primary/90 rounded-2xl font-bold text-lg shadow-xl shadow-primary/10 transition-all active:scale-[0.98] flex-[1.5]"
+          className={cn(
+            "rounded-full text-base font-bold shadow-xl shadow-primary/20 hover:scale-[1.02] active:scale-[0.98] transition-all duration-300 w-full sm:flex-1 h-14 uppercase tracking-widest",
+            isInCart ? "bg-green-500 hover:bg-green-600 shadow-green-200" : "",
+          )}
+          onClick={
+            isInCart ? () => (window.location.href = "/checkout") : handleBuyNow
+          }
         >
-          <HugeiconsIcon
-            icon={ZapIcon}
-            size={20}
-            className="mr-3 fill-current"
-          />
-          Buy Now — KES {product.price.toLocaleString()}
+          {isInCart ? (
+            <span className="flex items-center gap-2">
+              Proceed to Checkout
+              <HugeiconsIcon icon={Tick01Icon} size={20} />
+            </span>
+          ) : (
+            <span className="flex items-center gap-2">
+              Buy Now
+              <HugeiconsIcon icon={ZapIcon} size={20} />
+            </span>
+          )}
         </Button>
         <Button
           size="lg"
           variant="outline"
-          onClick={handleAddToCart}
-          className="h-16 px-8 rounded-2xl border-2 border-gray-900 text-gray-900 hover:bg-gray-900 hover:text-white font-bold transition-all flex-1"
+          className={cn(
+            "rounded-full text-base font-bold border-gray-200 hover:bg-gray-50 hover:text-gray-900 w-full sm:flex-1 h-14 uppercase tracking-widest",
+            isInCart
+              ? "bg-gray-50 text-gray-400 cursor-not-allowed hover:bg-gray-50"
+              : "",
+          )}
+          onClick={isInCart ? undefined : handleAddToCart}
+          disabled={isInCart}
         >
-          <HugeiconsIcon
-            icon={ShoppingBasket01Icon}
-            size={20}
-            className="mr-3"
-          />
-          Add to Cart
+          {isInCart ? "Added to Cart" : "Add to Cart"}
         </Button>
       </div>
 
@@ -172,7 +183,7 @@ export function ProductInfo({ product }: ProductInfoProps) {
           <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center text-primary">
             <HugeiconsIcon icon={Download01Icon} size={20} />
           </div>
-          What's Included
+          What&apos;s Included
         </h3>
 
         <div className="grid grid-cols-2 gap-6">
@@ -199,30 +210,53 @@ export function ProductInfo({ product }: ProductInfoProps) {
         </div>
 
         <div className="pt-6 border-t border-gray-200/50 space-y-3">
-          <p className="text-sm font-medium text-gray-500 flex items-center gap-3">
-            <HugeiconsIcon
-              icon={Tick01Icon}
-              size={16}
-              className="text-primary"
-            />
-            Lifetime access & free updates
-          </p>
-          <p className="text-sm font-medium text-gray-500 flex items-center gap-3">
-            <HugeiconsIcon
-              icon={Tick01Icon}
-              size={16}
-              className="text-primary"
-            />
-            Works on Excel, Google Sheets & Mobile
-          </p>
-          <p className="text-sm font-medium text-gray-500 flex items-center gap-3">
-            <HugeiconsIcon
-              icon={Tick01Icon}
-              size={16}
-              className="text-primary"
-            />
-            Step-by-step video tutorial
-          </p>
+          {/* Show new format if available */}
+          {product.whatsIncluded && product.whatsIncluded.length > 0 ? (
+            product.whatsIncluded.slice(0, 3).map((item, index) => {
+              const title = item.split(" - ")[0];
+              return (
+                <p
+                  key={index}
+                  className="text-sm font-medium text-gray-500 flex items-center gap-3"
+                >
+                  <HugeiconsIcon
+                    icon={Tick01Icon}
+                    size={16}
+                    className="text-primary"
+                  />
+                  {title}
+                </p>
+              );
+            })
+          ) : (
+            // Fallback to default for legacy products
+            <>
+              <p className="text-sm font-medium text-gray-500 flex items-center gap-3">
+                <HugeiconsIcon
+                  icon={Tick01Icon}
+                  size={16}
+                  className="text-primary"
+                />
+                Lifetime access & free updates
+              </p>
+              <p className="text-sm font-medium text-gray-500 flex items-center gap-3">
+                <HugeiconsIcon
+                  icon={Tick01Icon}
+                  size={16}
+                  className="text-primary"
+                />
+                Works on Excel, Google Sheets & Mobile
+              </p>
+              <p className="text-sm font-medium text-gray-500 flex items-center gap-3">
+                <HugeiconsIcon
+                  icon={Tick01Icon}
+                  size={16}
+                  className="text-primary"
+                />
+                Step-by-step video tutorial
+              </p>
+            </>
+          )}
         </div>
       </div>
     </div>

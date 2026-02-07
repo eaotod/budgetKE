@@ -1,22 +1,27 @@
 import { MetadataRoute } from "next";
-import { createClient } from "@/lib/supabase/client";
 import { getBlogSlugs } from "@/lib/blog";
+import { getProductSlugs } from "@/lib/catalog/products";
+import { getBundles } from "@/lib/catalog";
 
-const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "https://budget.ke"; // Fallback for dev
+const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "https://budget.ke";
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const supabase = createClient();
-  
-  // 1. Dynamic Product URLs
-  const { data: products } = await supabase.from("products").select("slug").eq("status", "active");
-  const productUrls = products?.map((product) => ({
-    url: `${baseUrl}/templates/${product.slug}`,
+  const productSlugs = getProductSlugs();
+  const productUrls = productSlugs.map((slug) => ({
+    url: `${baseUrl}/templates/${slug}`,
     lastModified: new Date(),
     changeFrequency: "weekly" as const,
     priority: 0.8,
-  })) || [];
+  }));
 
-  // 2. Dynamic Blog URLs
+  const bundles = getBundles({ status: "active" });
+  const bundleUrls = bundles.map((b) => ({
+    url: `${baseUrl}/bundles/${b.slug}`,
+    lastModified: new Date(),
+    changeFrequency: "weekly" as const,
+    priority: 0.75,
+  }));
+
   const blogSlugs = getBlogSlugs();
   const blogUrls = blogSlugs.map((slug) => ({
     url: `${baseUrl}/blog/${slug.replace(/\.mdx$/, "")}`,
@@ -45,6 +50,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       priority: 0.7,
     },
     ...productUrls,
+    ...bundleUrls,
     ...blogUrls,
   ];
 }

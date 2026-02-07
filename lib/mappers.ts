@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 /**
  * Supabase → TypeScript mappers
  *
@@ -5,7 +6,8 @@
  * to camelCase TypeScript interfaces.
  */
 
-import type { Product, Bundle, Category } from "./types";
+import type { Product, Bundle, Category, Review } from "./types";
+import { getPublicUrl } from "./supabase/storage";
 
 function normalizeStringArray(input: any): string[] {
   if (!input) return [];
@@ -25,6 +27,42 @@ function normalizeStringArray(input: any): string[] {
   return [];
 }
 
+/**
+ * Convert image paths to full public URLs
+ * If the URL already starts with http/https, return as-is
+ * Otherwise, treat it as a storage path and get the public URL
+ */
+function normalizeImageUrls(input: any): string[] {
+  const urls = normalizeStringArray(input);
+  return urls.map((url) => {
+    if (!url) return url;
+    if (url.startsWith("http://") || url.startsWith("https://")) return url;
+    return getPublicUrl(url);
+  });
+}
+
+function filterTechnicalDetails(
+  productType: "template" | "advanced_solution",
+  input: any,
+): Record<string, string> {
+  const details =
+    input && typeof input === "object" && !Array.isArray(input) ? input : {};
+
+  const allowedKeys =
+    productType === "advanced_solution"
+      ? (["technology_stack", "platform", "deployment_type"] as const)
+      : (["excel_version", "file_format", "compatibility"] as const);
+
+  const out: Record<string, string> = {};
+  for (const key of allowedKeys) {
+    const value = details[key];
+    if (typeof value === "string" && value.trim()) {
+      out[key] = value.trim();
+    }
+  }
+  return out;
+}
+
 // ============================================
 // PRODUCT MAPPER
 // ============================================
@@ -33,6 +71,12 @@ function normalizeStringArray(input: any): string[] {
  * Maps a Supabase product row to the Product interface
  */
 export function mapProduct(p: Record<string, any>): Product {
+  const productType = (p.product_type ?? "template") as
+    | "template"
+    | "advanced_solution";
+
+  const mappedImages = normalizeImageUrls(p.images);
+
   return {
     id: p.id,
     name: p.name,
@@ -42,16 +86,26 @@ export function mapProduct(p: Record<string, any>): Product {
     price: p.price,
     comparePrice: p.compare_price,
     currency: p.currency ?? "KES",
+    productType,
     shortDescription: p.short_description ?? "",
     description: p.description ?? "",
+    features: p.features ?? [],
+    whatsIncluded: p.whats_included ?? [],
+    requirements: p.requirements ?? [],
+    technicalDetails: filterTechnicalDetails(productType, p.technical_details),
+    // Legacy fields for backward compatibility
     whatYouGet: p.what_you_get ?? [],
     detailsSpecs: p.details_specs ?? [],
     whyItWorks: p.why_it_works,
     howToUse: p.how_to_use,
-    images: normalizeStringArray(p.images),
-    thumbnailUrl: p.thumbnail_url,
+    images: mappedImages, // Convert paths to full URLs
+    thumbnailUrl: p.thumbnail_url && !p.thumbnail_url.startsWith('http') 
+      ? getPublicUrl(p.thumbnail_url) 
+      : p.thumbnail_url,
     videoUrl: p.video_url,
-    videoThumbnail: p.video_thumbnail,
+    videoThumbnail: p.video_thumbnail && !p.video_thumbnail.startsWith('http')
+      ? getPublicUrl(p.video_thumbnail)
+      : p.video_thumbnail,
     metaTitle: p.meta_title,
     metaDescription: p.meta_description,
     keywords: p.keywords,
@@ -125,8 +179,10 @@ export function mapBundle(b: Record<string, any>): Bundle {
     originalPrice: b.original_price ?? 0,
     bundlePrice: b.bundle_price ?? 0,
     savings: (b.original_price ?? 0) - (b.bundle_price ?? 0),
-    images: normalizeStringArray(b.images),
-    thumbnailUrl: b.thumbnail_url,
+    images: normalizeImageUrls(b.images), // Convert paths to full URLs
+    thumbnailUrl: b.thumbnail_url && !b.thumbnail_url.startsWith('http')
+      ? getPublicUrl(b.thumbnail_url)
+      : b.thumbnail_url,
     isFeatured: b.is_featured ?? false,
     status: b.status ?? "draft",
     metaTitle: b.meta_title,
@@ -139,4 +195,35 @@ export function mapBundle(b: Record<string, any>): Bundle {
  */
 export function mapBundles(rows: Record<string, any>[]): Bundle[] {
   return rows.map(mapBundle);
+}
+
+// ============================================
+// REVIEW MAPPER
+// ============================================
+
+export function mapReview(r: Record<string, any>): Review {
+  return {
+    id: r.id,
+    productId: r.product_id,
+    orderId: r.order_id ?? undefined,
+    authorName: r.author_name,
+    authorEmail: r.author_email,
+    authorAvatar: r.author_avatar ?? undefined,
+    authorLocation: r.author_location ?? undefined,
+    rating: r.rating,
+    title: r.title ?? undefined,
+    content: r.content,
+    isVerified: r.is_verified ?? false,
+    isApproved: r.is_approved ?? false,
+    moderationStatus: r.moderation_status ?? undefined,
+    isFeatured: r.is_featured ?? false,
+    helpfulCount: r.helpful_count ?? 0,
+    adminResponse: r.admin_response ?? undefined,
+    adminRespondedAt: r.admin_responded_at ?? undefined,
+    createdAt: r.created_at,
+  };
+}
+
+export function mapReviews(rows: Record<string, any>[]): Review[] {
+  return rows.map(mapReview);
 }

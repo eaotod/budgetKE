@@ -52,7 +52,6 @@ export async function POST(request: NextRequest) {
         });
 
       if (error) {
-        console.error("Newsletter subscription error:", error);
         return NextResponse.json(
           { error: "Failed to subscribe" },
           { status: 500 }
@@ -82,15 +81,13 @@ export async function POST(request: NextRequest) {
             </p>
           `,
         });
-      } catch (e) {
+      } catch {
         // Don't fail the whole request if email fails
-        console.error("Failed to send welcome email:", e);
       }
     }
 
     return NextResponse.json({ success: true, message: "Subscribed successfully" });
-  } catch (error) {
-    console.error("Newsletter API error:", error);
+  } catch {
     return NextResponse.json(
       { error: "Internal server error" },
       { status: 500 }

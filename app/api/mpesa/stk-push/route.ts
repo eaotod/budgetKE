@@ -31,7 +31,6 @@ export async function POST(request: NextRequest) {
       : "https://sandbox.intasend.com";
 
     if (!INTASEND_API_KEY || !INTASEND_PUBLIC_KEY) {
-      console.log("IntaSend credentials not configured, using MOCK mode");
       return NextResponse.json({
         success: true,
         checkoutId: `mock-checkout-${Date.now()}`,
@@ -41,9 +40,6 @@ export async function POST(request: NextRequest) {
     
     // MOCK MODE: If keys are present but we want to simulate success for dev, or fail gracefully
     // For now, if keys are missing (checked above), it returns error.
-    // Let's allow a mock mode if using a specific phone number or if keys are just placeholders
-    const isMock = process.env.NODE_ENV === "development" && phone === "254700000000"; 
-    // Actually, asking the user to use a specific number is annoying.
     // Let's just fallback to mock if keys are missing/invalid for now to unblock the demo.
     
     // Initiate M-Pesa STK Push via IntaSend
@@ -69,7 +65,6 @@ export async function POST(request: NextRequest) {
     const data = await response.json();
 
     if (!response.ok) {
-      console.error("IntaSend STK error:", data);
       return NextResponse.json(
         { error: data.message || "Failed to initiate payment" },
         { status: 400 }
@@ -91,8 +86,7 @@ export async function POST(request: NextRequest) {
       checkoutId: data.invoice?.invoice_id || data.id,
       message: "Check your phone for the M-Pesa prompt",
     });
-  } catch (error) {
-    console.error("M-Pesa STK API error:", error);
+  } catch {
     return NextResponse.json(
       { error: "Internal server error" },
       { status: 500 }

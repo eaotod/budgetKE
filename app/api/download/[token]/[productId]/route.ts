@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createAdminClient } from "@/lib/supabase/admin";
+import { getProductFilePath, getProductBySlugOrId } from "@/lib/catalog";
 
 interface RouteParams {
   params: Promise<{ token: string; productId: string }>;
@@ -13,7 +14,6 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
 
     const supabase = createAdminClient();
 
-    // Fetch order by download token
     const { data: order, error } = await supabase
       .from("orders")
       .select("*")
@@ -24,53 +24,42 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
       return NextResponse.json({ error: "Invalid download link" }, { status: 404 });
     }
 
-    // Check if order is paid
     if (order.payment_status !== "completed") {
       return NextResponse.json({ error: "Payment not confirmed" }, { status: 403 });
     }
 
-    // Check download limit
     const downloadCount = order.download_count || 0;
     const maxDownloads = order.max_downloads || 5;
-    
     if (downloadCount >= maxDownloads) {
       return NextResponse.json({ error: "Download limit reached" }, { status: 403 });
     }
 
-    // Verify product is in order
     const items = order.items as Array<{ productId: string; name: string }>;
-    const orderedProduct = items.find((item) => item.productId === productId);
-    
+    const orderedProduct = items.find(
+      (item) => item.productId === productId,
+    );
     if (!orderedProduct) {
       return NextResponse.json({ error: "Product not in this order" }, { status: 403 });
     }
 
-    // Fetch product for file URL
-    const { data: product } = await supabase
-      .from("products")
-      .select("file_url, name")
-      .eq("id", productId)
-      .single();
-
-    if (!product || !product.file_url) {
+    const fileUrl = getProductFilePath(productId);
+    if (!fileUrl) {
       return NextResponse.json({ error: "Product file not found" }, { status: 404 });
     }
 
-    // Log download
+    const product = getProductBySlugOrId(productId);
+
     await supabase.from("download_logs").insert({
       order_id: order.id,
-      product_id: productId,
+      product_id: product?.id ?? productId,
       ip_address: request.headers.get("x-forwarded-for") || request.headers.get("x-real-ip"),
       user_agent: request.headers.get("user-agent"),
     });
 
-    // Increment download count
     await supabase
       .from("orders")
       .update({ download_count: downloadCount + 1 })
       .eq("id", order.id);
-
-    const fileUrl = product.file_url;
 
     // If file is in Supabase Storage via public URL, generate signed URL
     if (fileUrl.includes("supabase.co/storage")) {
@@ -103,8 +92,7 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
 
     // For external URLs, redirect directly
     return NextResponse.redirect(fileUrl);
-  } catch (error) {
-    console.error("Download error:", error);
+  } catch {
     return NextResponse.json({ error: "Internal server error" }, { status: 500 });
   }
 }

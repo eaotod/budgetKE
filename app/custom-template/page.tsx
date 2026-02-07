@@ -1,9 +1,10 @@
 "use client";
 
 import { useState } from "react";
-import { useForm, Controller } from "react-hook-form";
+import { useForm, Controller, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
+import { useTransition } from "react";
 import { Navbar } from "@/components/layout/navbar";
 import { Footer } from "@/components/layout/footer";
 import { BreadcrumbJsonLd } from "@/components/ui/breadcrumbs";
@@ -12,7 +13,6 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import {
   Field,
-  FieldGroup,
   FieldLabel,
   FieldDescription,
   FieldError,
@@ -26,29 +26,30 @@ import {
 } from "@/components/ui/select";
 import { HugeiconsIcon } from "@hugeicons/react";
 import {
-  PaintBoardIcon,
   CodeCircleIcon,
   CheckmarkCircle01Icon,
   ArrowRight02Icon,
+  Settings02Icon,
+  CheckmarkCircle02Icon,
 } from "@hugeicons/core-free-icons";
+import { getServicesByProductType } from "@/lib/data";
+import { submitCustomRequest } from "./actions";
 
 const formSchema = z.object({
   name: z.string().min(2, "Name must be at least 2 characters"),
   email: z.string().email("Please enter a valid email"),
   phone: z.string().min(10, "Please enter a valid phone number"),
-  serviceType: z.enum(["tier4", "tier5"] as const),
+  productType: z.enum(["template", "advanced_solution"] as const),
   projectType: z.string().min(1, "Please select a project type"),
   description: z
     .string()
     .min(20, "Please describe your project in more detail"),
-  timeline: z.string().optional(),
-  budget: z.string().optional(),
-  features: z.array(z.string()),
+  budget: z.string().min(1, "Please provide your budget range"),
 });
 
 export default function CustomTemplatePage() {
   const [isSubmitted, setIsSubmitted] = useState(false);
-  const [pricingEstimate, setPricingEstimate] = useState<number | null>(null);
+  const [isPending, startTransition] = useTransition();
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -56,10 +57,10 @@ export default function CustomTemplatePage() {
       name: "",
       email: "",
       phone: "",
-      serviceType: "tier4",
+      productType: "template",
       projectType: "",
       description: "",
-      features: [],
+      budget: "",
     },
   });
 
@@ -67,24 +68,18 @@ export default function CustomTemplatePage() {
     register,
     control,
     handleSubmit,
-    watch,
     setValue,
     formState: { errors },
   } = form;
-  const serviceType = watch("serviceType");
 
-  // Dynamic pricing estimation (simplified)
-  const calculateEstimate = (values: z.infer<typeof formSchema>) => {
-    let base = values.serviceType === "tier4" ? 2999 : 499;
-    // Add logic based on features or complexity if needed
-    setPricingEstimate(base);
-  };
+  const productType = useWatch({ control, name: "productType" });
+  const services = getServicesByProductType(productType);
 
-  function onSubmit(values: z.infer<typeof formSchema>) {
-    console.log(values);
-    calculateEstimate(values);
-    setIsSubmitted(true);
-    // Here we would effectively send data to API/Email
+  async function onSubmit(values: z.infer<typeof formSchema>) {
+    startTransition(async () => {
+      await submitCustomRequest(values);
+      setIsSubmitted(true);
+    });
   }
 
   const breadcrumbItems = [
@@ -108,39 +103,112 @@ export default function CustomTemplatePage() {
             </p>
           </div>
 
-          <div className="grid md:grid-cols-2 gap-8 mb-16">
+          {/* Product Type Selector */}
+          <div className="grid md:grid-cols-2 gap-8 mb-12">
             <div
-              className={`p-8 rounded-3xl border-2 transition-all cursor-pointer ${serviceType === "tier4" ? "border-primary bg-primary/5" : "border-gray-200 bg-white hover:border-primary/30"}`}
-              onClick={() => setValue("serviceType", "tier4")}
+              className={`p-8 rounded-3xl border-2 transition-all cursor-pointer ${productType === "template" ? "border-primary bg-primary/5" : "border-gray-200 bg-white hover:border-primary/30"}`}
+              onClick={() => setValue("productType", "template")}
             >
               <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center text-primary mb-4">
                 <HugeiconsIcon icon={CodeCircleIcon} size={24} />
               </div>
               <h3 className="text-xl font-bold text-gray-900 mb-2">
-                Custom Development (Tier 4)
+                Template Solutions
               </h3>
               <p className="text-gray-500 text-sm mb-4">
-                Built from scratch systems for specific business workflows.
+                Custom Excel & Google Sheets templates tailored to your needs.
               </p>
-              <p className="text-primary font-bold">From KES 2,999</p>
+              <p className="text-primary font-bold">From KES 15,000</p>
             </div>
 
             <div
-              className={`p-8 rounded-3xl border-2 transition-all cursor-pointer ${serviceType === "tier5" ? "border-purple-500 bg-purple-50" : "border-gray-200 bg-white hover:border-purple-200"}`}
-              onClick={() => setValue("serviceType", "tier5")}
+              className={`p-8 rounded-3xl border-2 transition-all cursor-pointer ${productType === "advanced_solution" ? "border-primary bg-primary/5" : "border-gray-200 bg-white hover:border-primary/30"}`}
+              onClick={() => setValue("productType", "advanced_solution")}
             >
-              <div className="w-12 h-12 rounded-xl bg-purple-100 flex items-center justify-center text-purple-600 mb-4">
-                <HugeiconsIcon icon={PaintBoardIcon} size={24} />
+              <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center text-primary mb-4">
+                <HugeiconsIcon icon={Settings02Icon} size={24} />
               </div>
               <h3 className="text-xl font-bold text-gray-900 mb-2">
-                Modifications (Tier 5)
+                Advanced Solutions
               </h3>
               <p className="text-gray-500 text-sm mb-4">
-                Tweaks and add-ons to our existing premium templates.
+                PWAs, complex systems, and business consulting services.
               </p>
-              <p className="text-purple-600 font-bold">From KES 499</p>
+              <p className="text-primary font-bold">From KES 25,000</p>
             </div>
           </div>
+
+          {/* Services Available */}
+          {services.length > 0 && (
+            <div className="mb-16">
+              <h2 className="text-2xl font-black text-gray-900 mb-6">
+                Available Services
+              </h2>
+              <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {services.map((service) => (
+                  <div
+                    key={service.id}
+                    className="group relative bg-white p-6 rounded-3xl border border-gray-100 shadow-sm hover:shadow-xl hover:shadow-primary/5 transition-all duration-300 overflow-hidden"
+                  >
+                    <div className="absolute top-0 right-0 w-24 h-24 bg-primary/5 rounded-bl-[100px] -mr-4 -mt-4 transition-transform group-hover:scale-110" />
+
+                    <div className="relative z-10">
+                      <div className="w-12 h-12 bg-white rounded-xl shadow-sm border border-gray-100 flex items-center justify-center text-primary mb-4 group-hover:scale-110 transition-transform duration-300">
+                        <HugeiconsIcon
+                          icon={CheckmarkCircle02Icon}
+                          className="w-6 h-6"
+                        />
+                      </div>
+
+                      <h3 className="text-xl font-bold text-gray-900 mb-2 group-hover:text-primary transition-colors">
+                        {service.name}
+                      </h3>
+
+                      <p className="text-gray-500 text-sm leading-relaxed mb-4">
+                        {service.shortDescription}
+                      </p>
+
+                      <div className="flex items-center justify-between mt-auto pt-4 border-t border-gray-50 mb-4">
+                        <span className="text-xs font-bold text-gray-400 uppercase tracking-widest">
+                          Starting at
+                        </span>
+                        <span className="text-lg font-black text-gray-900">
+                          KES {service.priceMin.toLocaleString()}
+                        </span>
+                      </div>
+
+                      {service.timeline && (
+                        <div className="mb-4">
+                          <div className="text-xs text-gray-400 font-bold uppercase">
+                            Timeline
+                          </div>
+                          <div className="text-sm font-bold text-gray-700">
+                            {service.timeline}
+                          </div>
+                        </div>
+                      )}
+
+                      <ul className="space-y-2">
+                        {service.features.slice(0, 3).map((feature, idx) => (
+                          <li
+                            key={idx}
+                            className="flex items-start gap-2 text-sm text-gray-600"
+                          >
+                            <HugeiconsIcon
+                              icon={CheckmarkCircle02Icon}
+                              size={16}
+                              className="text-primary shrink-0 mt-0.5"
+                            />
+                            {feature}
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
 
           <div className="bg-white rounded-[2.5rem] p-8 md:p-12 shadow-xl shadow-gray-200/50 border border-gray-100">
             {isSubmitted ? (
@@ -152,12 +220,9 @@ export default function CustomTemplatePage() {
                   Request Received!
                 </h2>
                 <p className="text-gray-500 mb-8 max-w-md mx-auto">
-                  Thanks {form.getValues("name")}. We've received your request.
-                  Based on your selection, the estimated starting price is{" "}
-                  <span className="text-gray-900 font-bold">
-                    KES {pricingEstimate?.toLocaleString()}
-                  </span>
-                  . We'll be in touch within 24 hours to discuss details.
+                  Thanks {form.getValues("name")}. We&apos;ve received your
+                  request and will review it carefully. We&apos;ll be in touch
+                  within 24 hours to discuss details and provide a quote.
                 </p>
                 <Button onClick={() => setIsSubmitted(false)} variant="outline">
                   Start New Request
@@ -253,17 +318,40 @@ export default function CustomTemplatePage() {
                   <FieldError errors={[errors.description]} />
                 </Field>
 
+                {/* Budget */}
+                <Field data-invalid={!!errors.budget}>
+                  <FieldLabel htmlFor="budget">Budget Range</FieldLabel>
+                  <Input
+                    id="budget"
+                    placeholder="e.g., KES 20,000 - 30,000 or KES 50,000+"
+                    className="h-12 rounded-xl bg-gray-50 border-gray-200"
+                    {...register("budget")}
+                  />
+                  <FieldDescription>
+                    Provide your budget range to help us recommend the best
+                    solution.
+                  </FieldDescription>
+                  <FieldError errors={[errors.budget]} />
+                </Field>
+
                 <Button
                   type="submit"
                   size="lg"
+                  disabled={isPending}
                   className="w-full h-14 text-lg font-bold rounded-xl"
                 >
-                  Submit Request
-                  <HugeiconsIcon
-                    icon={ArrowRight02Icon}
-                    size={20}
-                    className="ml-2"
-                  />
+                  {isPending ? (
+                    "Submitting..."
+                  ) : (
+                    <>
+                      Submit Request
+                      <HugeiconsIcon
+                        icon={ArrowRight02Icon}
+                        size={20}
+                        className="ml-2"
+                      />
+                    </>
+                  )}
                 </Button>
               </form>
             )}

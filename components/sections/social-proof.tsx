@@ -9,29 +9,25 @@ const testimonials = [
   {
     name: "John Kamau",
     role: "Retail Shop Owner",
-    image:
-      "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=800&auto=format&fit=crop",
+    image: "/images/social-proof/1.png",
     video: "/videos/proofs/proof-1.mp4",
   },
   {
     name: "Sarah Mwangi",
     role: "Freelance Consultant",
-    image:
-      "https://images.unsplash.com/photo-1494790108377-be9c29b29330?q=80&w=800&auto=format&fit=crop",
+    image: "/images/social-proof/2.png",
     video: "/videos/proofs/proof-2.mp4",
   },
   {
     name: "David Ochieng",
     role: "Tech Entrepreneur",
-    image:
-      "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?q=80&w=800&auto=format&fit=crop",
+    image: "/images/social-proof/3.png",
     video: "/videos/proofs/proof-3.mp4",
   },
   {
     name: "Faith Kyallo",
     role: "Financial Advisor",
-    image:
-      "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?q=80&w=800&auto=format&fit=crop",
+    image: "/images/social-proof/4.png",
     video: "/videos/proofs/proof-4.mp4",
   },
 ];
@@ -44,6 +40,7 @@ export function SocialProof() {
   const [hasMounted, setHasMounted] = useState(false);
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setHasMounted(true);
   }, []);
 

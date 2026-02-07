@@ -1,0 +1,40 @@
+# BudgetKE categories (4). Edit here; no admin CRUD.
+- id: personal-finance
+  name: Personal Finance
+  slug: personal-finance
+  description: Take control of your money with budget trackers, savings planners, and debt management tools designed for Kenyan households.
+  icon: Wallet01Icon
+  displayOrder: 1
+  imageUrl: /images/categories/personal-finance.webp
+  metaTitle: "Personal Finance Templates Kenya | Budget Planners & Trackers"
+  metaDescription: "Download professional budget planners, savings trackers, and debt management tools made for Kenyans. M-Pesa ready."
+
+- id: business-tools
+  name: Business Tools
+  slug: business-tools
+  description: Professional bookkeeping, inventory, and financial management tools for Kenyan SMEs and entrepreneurs.
+  icon: Briefcase01Icon
+  displayOrder: 2
+  imageUrl: /images/categories/business-tools.webp
+  metaTitle: "Business Templates Kenya | Bookkeeping & Inventory Tools"
+  metaDescription: "Streamline your Kenyan business with professional Excel templates for bookkeeping, inventory, and financial reporting."
+
+- id: industry-specific
+  name: Industry Specific
+  slug: industry-specific
+  description: Specialized templates for specific Kenyan industries including Mtumba, hospitality, retail, and real estate.
+  icon: Building01Icon
+  displayOrder: 3
+  imageUrl: /images/categories/industry-specific.webp
+  metaTitle: "Industry Templates Kenya | Mtumba, Hospitality & Retail"
+  metaDescription: "Specialized business templates for Kenyan industries. Track inventory, manage finances, and grow your business."
+
+- id: advanced-solutions
+  name: Advanced Solutions
+  slug: advanced-solutions
+  description: Progressive Web Apps, VBA applications, and desktop software for businesses that have outgrown spreadsheets.
+  icon: Settings02Icon
+  displayOrder: 4
+  imageUrl: /images/categories/advanced-solutions.webp
+  metaTitle: "Advanced Business Solutions Kenya | PWA & Custom Software"
+  metaDescription: "Offline-first PWAs, VBA applications, and C# desktop software for established Kenyan businesses. Built for scale."

@@ -1,8 +1,4 @@
-import { getAdminEmails } from "@/lib/auth/admin";
-
 export default async function SettingsPage() {
-  const admins = getAdminEmails();
-
   return (
     <div className="space-y-10">
       <div>
@@ -17,23 +13,13 @@ export default async function SettingsPage() {
       <div className="bg-white rounded-[2rem] border border-gray-100 shadow-sm p-8 space-y-4">
         <h2 className="text-lg font-black text-gray-900">Admin Users</h2>
         <p className="text-sm text-gray-500">
-          Only emails listed here can access admin features.
+          Admin access is determined by the signed-in user&apos;s Supabase auth
+          metadata role.
         </p>
-        <div className="space-y-2">
-          {admins.length === 0 ? (
-            <div className="text-sm text-gray-400">
-              No admin emails found. Add one via `ADMIN_EMAIL` and re-seed.
-            </div>
-          ) : (
-            admins.map((admin) => (
-              <div
-                key={admin}
-                className="px-4 py-3 rounded-xl border border-gray-100 bg-gray-50 text-sm font-bold text-gray-700"
-              >
-                {admin}
-              </div>
-            ))
-          )}
+        <div className="text-sm text-gray-400">
+          To grant access to the portal, set <span className="font-mono">role</span>{" "}
+          to <span className="font-mono">admin</span> in the user&apos;s{" "}
+          <span className="font-mono">user_metadata</span>.
         </div>
       </div>
 

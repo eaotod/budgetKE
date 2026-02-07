@@ -5,7 +5,7 @@ export async function createClient() {
   let cookieStore;
   try {
     cookieStore = await cookies();
-  } catch (e) {
+  } catch {
     // If cookies() is called outside of a request scope (e.g., in generateStaticParams),
     // we return a client without cookie handling.
     return createServerClient(

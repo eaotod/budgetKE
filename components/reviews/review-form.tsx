@@ -5,14 +5,20 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
-import { Label } from "@/components/ui/label";
+import { Field, FieldLabel, FieldError } from "@/components/ui/field";
 import { HugeiconsIcon } from "@hugeicons/react";
 import * as HugeIcons from "@hugeicons/core-free-icons";
-import { reviewSchema } from "@/lib/types";
 import { cn } from "@/lib/utils";
 import { z } from "zod";
+import { toast } from "sonner";
 
-type ReviewFormData = z.infer<typeof reviewSchema>;
+const reviewFormSchema = z.object({
+  productId: z.string().min(1),
+  rating: z.number().min(1).max(5),
+  content: z.string().min(10, "Review must be at least 10 characters"),
+});
+
+type ReviewFormData = z.infer<typeof reviewFormSchema>;
 
 interface ReviewFormProps {
   productId: string;
@@ -39,7 +45,7 @@ export function ReviewForm({
     formState: { errors },
     reset,
   } = useForm<ReviewFormData>({
-    resolver: zodResolver(reviewSchema),
+    resolver: zodResolver(reviewFormSchema),
     defaultValues: {
       productId,
       rating: 0,
@@ -48,6 +54,9 @@ export function ReviewForm({
 
   const handleFormSubmit = async (data: ReviewFormData) => {
     if (rating === 0) {
+      toast.error("Please select a rating", {
+        description: "You must select a star rating to submit a review.",
+      });
       setError("Please select a rating");
       return;
     }
@@ -63,10 +72,20 @@ export function ReviewForm({
         reset();
         setRating(0);
         onSuccess?.();
+        toast.success("Review submitted!", {
+          description: "Thank you for your feedback. check back soon!",
+        });
       } else {
-        setError(result.error || "Failed to submit review");
+        const errorMessage = result.error || "Failed to submit review";
+        setError(errorMessage);
+        toast.error("Submission failed", {
+          description: errorMessage,
+        });
       }
-    } catch (err) {
+    } catch {
+      toast.error("Something went wrong", {
+        description: "Please try again later.",
+      });
       setError("Something went wrong. Please try again.");
     } finally {
       setIsSubmitting(false);
@@ -104,64 +123,64 @@ export function ReviewForm({
   return (
     <form onSubmit={handleSubmit(handleFormSubmit)} className="space-y-8">
       {/* Rating */}
-      <div className="text-center bg-white p-8 rounded-3xl border border-gray-100 shadow-sm">
-        <Label className="text-sm font-black uppercase tracking-[0.2em] text-gray-400 mb-6 block">
-          Your Rating
-        </Label>
-        <div className="flex items-center justify-center gap-3">
-          {[1, 2, 3, 4, 5].map((star) => (
-            <button
-              key={star}
-              type="button"
-              onClick={() => setRating(star)}
-              onMouseEnter={() => setHoverRating(star)}
-              onMouseLeave={() => setHoverRating(0)}
-              className="p-1 transition-transform hover:scale-110"
-            >
-              <HugeiconsIcon
-                icon={HugeIcons.StarIcon}
-                size={40}
-                className={cn(
-                  "transition-all duration-300",
-                  (hoverRating || rating) >= star
-                    ? "text-amber-400 fill-amber-400"
-                    : "text-gray-200",
-                )}
-              />
-            </button>
-          ))}
-        </div>
-        {rating > 0 && (
-          <div className="mt-4 text-sm font-black text-primary uppercase tracking-widest">
-            {getRatingLabel(rating)}
+      <Field>
+        <div className="text-center bg-white p-8 rounded-3xl border border-gray-100 shadow-sm">
+          <FieldLabel className="text-sm font-black uppercase tracking-[0.2em] text-gray-400 mb-6 block">
+            Your Rating
+          </FieldLabel>
+          <div className="flex items-center justify-center gap-3">
+            {[1, 2, 3, 4, 5].map((star) => (
+              <button
+                key={star}
+                type="button"
+                onClick={() => setRating(star)}
+                onMouseEnter={() => setHoverRating(star)}
+                onMouseLeave={() => setHoverRating(0)}
+                className="p-1 transition-transform hover:scale-110"
+              >
+                <HugeiconsIcon
+                  icon={HugeIcons.StarIcon}
+                  size={40}
+                  className={cn(
+                    "transition-all duration-300",
+                    (hoverRating || rating) >= star
+                      ? "text-amber-400 fill-amber-400"
+                      : "text-gray-200",
+                  )}
+                />
+              </button>
+            ))}
           </div>
-        )}
-      </div>
+          {rating > 0 && (
+            <div className="mt-4 text-sm font-black text-primary uppercase tracking-widest">
+              {getRatingLabel(rating)}
+            </div>
+          )}
+        </div>
+      </Field>
 
       {/* Content */}
-      <div className="bg-white p-8 rounded-3xl border border-gray-100 shadow-sm">
-        <Label
-          htmlFor="content"
-          className="text-sm font-black uppercase tracking-[0.2em] text-gray-400 mb-4 block"
-        >
-          Your Experience
-        </Label>
-        <Textarea
-          id="content"
-          placeholder="What did you like about this template? How did it help you?"
-          rows={6}
-          {...register("content")}
-          className={cn(
-            "bg-gray-50 border-gray-100 focus:bg-white focus:ring-primary/20 rounded-[2rem] p-6 text-base font-medium resize-none transition-all",
-            errors.content && "border-red-500",
-          )}
-        />
-        {errors.content && (
-          <p className="text-sm text-red-500 mt-3 font-bold pl-4">
-            {errors.content.message}
-          </p>
-        )}
-      </div>
+      <Field data-invalid={!!errors.content}>
+        <div className="bg-white p-8 rounded-3xl border border-gray-100 shadow-sm">
+          <FieldLabel
+            htmlFor="content"
+            className="text-sm font-black uppercase tracking-[0.2em] text-gray-400 mb-4 block"
+          >
+            Your Experience
+          </FieldLabel>
+          <Textarea
+            id="content"
+            placeholder="What did you like about this template? How did it help you?"
+            rows={6}
+            {...register("content")}
+            className={cn(
+              "bg-gray-50 border-gray-100 focus:bg-white focus:ring-primary/20 rounded-[2rem] p-6 text-base font-medium resize-none transition-all",
+              errors.content && "border-red-500",
+            )}
+          />
+          <FieldError errors={[errors.content]} />
+        </div>
+      </Field>
 
       {/* Error */}
       {error && (

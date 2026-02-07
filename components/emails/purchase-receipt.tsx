@@ -36,9 +36,11 @@ export const PurchaseReceiptEmail = ({
           <Heading style={h1}>Order Confirmed!</Heading>
           <Text style={text}>Hi {customerName},</Text>
           <Text style={text}>
-            Thank you for purchasing <strong>{productName}</strong>. Your payment of <strong>KES {amount}</strong> via M-Pesa has been received.
+            Thank you for purchasing <strong>{productName}</strong>. Your
+            payment of <strong>KES {amount}</strong> via M-Pesa has been
+            received.
           </Text>
-          
+
           <Section style={btnContainer}>
             <Button style={button} href={downloadLink}>
               Download Your Template
@@ -46,13 +48,14 @@ export const PurchaseReceiptEmail = ({
           </Section>
 
           <Text style={text}>
-            If the button doesn't work, copy and paste this link into your browser:
+            If the button doesn&apos;t work, copy and paste this link into your
+            browser:
             <br />
             {downloadLink}
           </Text>
 
           <Hr style={hr} />
-          
+
           <Text style={footer}>
             BudgetKE • Nairobi, Kenya
             <br />

@@ -1,7 +1,6 @@
 import { NextResponse } from "next/server";
 import { type NextRequest } from "next/server";
-import { createServerClient } from "@supabase/ssr";
-import { isAdminEmail } from "@/lib/auth/admin";
+import { createServerClient, type CookieOptions } from "@supabase/ssr";
 
 export async function GET(request: NextRequest) {
   const requestUrl = new URL(request.url);
@@ -19,10 +18,10 @@ export async function GET(request: NextRequest) {
           get(name: string) {
             return cookieStore.get(name)?.value;
           },
-          set(name: string, value: string, options: any) {
+          set(name: string, value: string, options: CookieOptions) {
             cookieStore.set({ name, value, ...options });
           },
-          remove(name: string, options: any) {
+          remove(name: string, options: CookieOptions) {
             cookieStore.set({ name, value: "", ...options });
           },
         },
@@ -36,17 +35,20 @@ export async function GET(request: NextRequest) {
         data: { user },
       } = await supabase.auth.getUser();
 
-      // Ensure role metadata is set
-      const shouldBeAdmin = isAdminEmail(user?.email);
-      const currentRole = user?.user_metadata?.role;
-      const desiredRole = shouldBeAdmin ? "admin" : "user";
-      if (user && currentRole !== desiredRole) {
-        await supabase.auth.updateUser({ data: { role: desiredRole } });
+      // Bootstrap single-admin role on first login (Google, etc.)
+      // This does NOT grant access by email at runtime; it only sets metadata.role.
+      const bootstrapAdminEmail = process.env.ADMIN_EMAIL?.trim().toLowerCase();
+      if (
+        bootstrapAdminEmail &&
+        user?.email?.toLowerCase() === bootstrapAdminEmail &&
+        user.user_metadata?.role !== "admin"
+      ) {
+        await supabase.auth.updateUser({ data: { role: "admin" } });
       }
 
-      // If attempting to access admin routes, enforce admin email
+      // If attempting to access admin routes, enforce admin role metadata
       if (next.startsWith("/manage")) {
-        if (!user || (!shouldBeAdmin && currentRole !== "admin")) {
+        if (!user || user.user_metadata?.role !== "admin") {
           await supabase.auth.signOut();
           return NextResponse.redirect(
             `${requestUrl.origin}/login?error=not_admin`,

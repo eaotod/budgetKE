@@ -1,13 +1,51 @@
 import { NextRequest, NextResponse } from "next/server";
 import { nanoid } from "nanoid";
 import { createAdminClient } from "@/lib/supabase/admin";
+import { getBundleBySlug, getBundleById, getProductBySlug } from "@/lib/catalog";
+
+type CartItem = {
+  id: string;
+  name: string;
+  price: number;
+  quantity: number;
+  type: "product" | "bundle";
+};
+
+/** Expand bundle items into per-product line items so each download link works. */
+function expandOrderItems(items: CartItem[]): CartItem[] {
+  const expanded: CartItem[] = [];
+  for (const item of items) {
+    if (item.type === "bundle") {
+      const bundle =
+        getBundleById(item.id) ?? getBundleBySlug(item.id);
+      if (bundle?.productIds?.length) {
+        for (const slug of bundle.productIds) {
+          const product = getProductBySlug(slug);
+          expanded.push({
+            id: slug,
+            name: product?.name ?? slug,
+            price: 0,
+            quantity: 1,
+            type: "product",
+          });
+        }
+        continue;
+      }
+    }
+    expanded.push({
+      ...item,
+      id: item.id,
+      type: item.type as "product" | "bundle",
+    });
+  }
+  return expanded;
+}
 
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
     const { email, phone, customerName, items, total } = body;
 
-    // Validate required fields
     if (!email || !phone || !items || items.length === 0 || !total) {
       return NextResponse.json(
         { error: "Missing required fields" },
@@ -15,19 +53,16 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Generate order number
     const orderNumber = `BK-${new Date().toISOString().slice(0, 10).replace(/-/g, "")}-${nanoid(6).toUpperCase()}`;
 
-    // Calculate subtotal
-    const subtotal = items.reduce(
-      (sum: number, item: { price: number; quantity: number }) =>
-        sum + item.price * item.quantity,
-      0
+    const expandedItems = expandOrderItems(items as CartItem[]);
+    const subtotal = (items as CartItem[]).reduce(
+      (sum: number, item: CartItem) => sum + item.price * item.quantity,
+      0,
     );
 
     const supabase = createAdminClient();
 
-    // Create order in Supabase
     const { data: order, error } = await supabase
       .from("orders")
       .insert({
@@ -35,7 +70,13 @@ export async function POST(request: NextRequest) {
         email,
         phone,
         customer_name: customerName,
-        items,
+        items: expandedItems.map((i) => ({
+          productId: i.id,
+          name: i.name,
+          price: i.price,
+          quantity: i.quantity,
+          type: i.type,
+        })),
         subtotal,
         discount: 0,
         total,
@@ -50,7 +91,6 @@ export async function POST(request: NextRequest) {
       .single();
 
     if (error) {
-      console.error("Order creation error:", error);
       return NextResponse.json(
         { error: "Failed to create order" },
         { status: 500 }
@@ -62,9 +102,7 @@ export async function POST(request: NextRequest) {
       orderId: order.id,
       orderNumber,
     });
-  } catch (error) {
-    console.error("Order API error:", error);
-    
+  } catch {
     // Mock fallback for development/demo
     return NextResponse.json({
       success: true,

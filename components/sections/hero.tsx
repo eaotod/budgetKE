@@ -1,4 +1,5 @@
 import React from "react";
+import NextImage from "next/image";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { Download01Icon, Video01Icon } from "@hugeicons/core-free-icons";
 import { Search } from "@/components/ui/search";
@@ -72,18 +73,22 @@ export function Hero() {
                       className="w-5 h-5 text-gray-700"
                     />
                   ) : badge.type === "image" ? (
-                    <img
-                      src={badge.src}
+                    <NextImage
+                      src={badge.src!}
                       alt={badge.label}
+                      width={40}
+                      height={40}
                       className="w-full h-full object-contain grayscale opacity-70"
                     />
                   ) : (
                     <div className="flex -space-x-2">
                       {badge.srcs?.map((src, sIdx) => (
-                        <img
+                        <NextImage
                           key={sIdx}
                           src={src}
                           alt={`${badge.label} ${sIdx + 1}`}
+                          width={24}
+                          height={24}
                           className="w-6 h-6 object-contain grayscale opacity-70"
                         />
                       ))}

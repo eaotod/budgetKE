@@ -1,8 +1,10 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useTransition } from "react";
+import { useRouter } from "next/navigation";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { Delete02Icon } from "@hugeicons/core-free-icons";
+import { toast } from "sonner";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -15,62 +17,66 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { DropdownMenuItem } from "@/components/ui/dropdown-menu";
-import { deleteItem } from "@/app/manage/actions";
-import { toast } from "sonner";
+import { createClient } from "@/lib/supabase/client";
 
 interface DeleteActionProps {
   id: string;
-  type: "products" | "categories" | "bundles" | "services";
+  type: "bundles" | "categories" | "products" | "reviews";
   name: string;
 }
 
 export function DeleteAction({ id, type, name }: DeleteActionProps) {
-  const [isDeleting, setIsDeleting] = useState(false);
+  const [open, setOpen] = useState(false);
+  const [isPending, startTransition] = useTransition();
+  const router = useRouter();
 
-  const handleDelete = async () => {
-    setIsDeleting(true);
-    const result = await deleteItem(id, type);
-    setIsDeleting(false);
+  const handleDelete = () => {
+    startTransition(async () => {
+      try {
+        const supabase = createClient();
+        const { error } = await supabase.from(type).delete().eq("id", id);
 
-    if (result.success) {
-      toast.success(`${name} deleted successfully`);
-    } else {
-      toast.error(`Failed to delete ${name}: ${result.error}`);
-    }
+        if (error) {
+          toast.error(`Failed to delete ${type.slice(0, -1)}`);
+          return;
+        }
+
+        toast.success(`${name} deleted successfully`);
+        setOpen(false);
+        router.refresh();
+      } catch (err) {
+        toast.error("Something went wrong");
+      }
+    });
   };
 
   return (
-    <AlertDialog>
+    <AlertDialog open={open} onOpenChange={setOpen}>
       <AlertDialogTrigger asChild>
         <DropdownMenuItem
           onSelect={(e) => e.preventDefault()}
-          className="flex items-center gap-2 cursor-pointer text-red-600 focus:text-white focus:bg-red-600 font-medium p-2 rounded-lg transition-all"
+          className="flex items-center gap-2 cursor-pointer font-medium p-2 text-red-600 focus:text-red-600 focus:bg-red-50"
         >
           <HugeiconsIcon icon={Delete02Icon} className="w-4 h-4" />
           Delete
         </DropdownMenuItem>
       </AlertDialogTrigger>
-      <AlertDialogContent className="rounded-[2rem] border-gray-100 p-8">
+      <AlertDialogContent>
         <AlertDialogHeader>
-          <AlertDialogTitle className="text-xl font-black text-gray-900 tracking-tight">
-            Are you absolutely sure?
-          </AlertDialogTitle>
-          <AlertDialogDescription className="text-gray-500 font-medium mt-2">
-            This will permanently delete{" "}
-            <span className="text-gray-900 font-bold">"{name}"</span> and all
-            associated data. This action cannot be undone.
+          <AlertDialogTitle>Delete {name}?</AlertDialogTitle>
+          <AlertDialogDescription>
+            This action cannot be undone. This will permanently delete this{" "}
+            {type.slice(0, -1)} from your database.
           </AlertDialogDescription>
         </AlertDialogHeader>
-        <AlertDialogFooter className="mt-8 gap-3">
-          <AlertDialogCancel className="rounded-full px-6 py-6 font-bold text-gray-500 hover:bg-gray-50 border-gray-100 transition-all">
-            Cancel
-          </AlertDialogCancel>
+        <AlertDialogFooter>
+          <AlertDialogCancel disabled={isPending}>Cancel</AlertDialogCancel>
           <AlertDialogAction
             onClick={handleDelete}
-            disabled={isDeleting}
-            className="rounded-full px-8 py-6 font-bold bg-red-600 hover:bg-red-700 text-white shadow-xl shadow-red-100 border-none transition-all"
+            variant="destructive"
+            disabled={isPending}
           >
-            {isDeleting ? "Deleting..." : "Delete Permanently"}
+            {isPending ? "Deleting..." : "Delete"}
           </AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>

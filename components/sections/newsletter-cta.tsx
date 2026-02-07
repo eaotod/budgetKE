@@ -119,7 +119,7 @@ export function NewsletterCTA({
                   <HugeiconsIcon icon={Tick01Icon} size={32} />
                 </div>
                 <h3 className="text-xl font-bold text-gray-900 mb-2">
-                  You're subscribed!
+                  You&apos;re subscribed!
                 </h3>
                 <p className="text-gray-500">
                   Check your email for a welcome message.

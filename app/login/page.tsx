@@ -32,8 +32,7 @@ export default function LoginPage() {
         },
       });
       if (error) throw error;
-    } catch (error) {
-      console.error("Error logging in:", error);
+    } catch {
       setIsLoading(false);
     }
   };

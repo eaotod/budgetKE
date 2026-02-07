@@ -3,12 +3,9 @@ import { Navbar } from "@/components/layout/navbar";
 import { Footer } from "@/components/layout/footer";
 import { Hero } from "@/components/sections/hero";
 import { SocialProof } from "@/components/sections/social-proof";
-import { FeaturedTemplates } from "@/components/sections/featured-templates";
 import { HowItWorks } from "@/components/sections/how-it-works";
-import { WallOfLove } from "@/components/testimonials/testimonial-card";
 import { FAQ } from "@/components/sections/faq";
 import { NewsletterCTA } from "@/components/sections/newsletter-cta";
-import { getFeaturedTestimonials } from "@/lib/data";
 
 // ... [skipping middle sections for brevity if possible, but tool needs exact match]
 
@@ -108,33 +105,15 @@ function WebsiteJsonLd() {
   );
 }
 
-import { createClient } from "@/lib/supabase/server";
-import { mapProducts } from "@/lib/mappers";
+import { getCategories, getProducts } from "@/lib/catalog";
 import { CategoriesSection } from "@/components/sections/categories";
 import { ProductsSection } from "@/components/sections/products-grid";
 import { BlogSection } from "@/components/sections/blog-section";
 import { getLatestBlogs } from "@/lib/blog";
 
 export default async function HomePage() {
-  const supabase = await createClient();
-
-  // 1. Fetch Categories
-  const { data: categories = [] } = await supabase
-    .from("categories")
-    .select("*")
-    .order("display_order", { ascending: true })
-    .limit(4);
-
-  // 2. Fetch Featured Products
-  const { data: productsData = [] } = await supabase
-    .from("products")
-    .select("*")
-    .eq("status", "active")
-    .order("created_at", { ascending: false });
-
-  const products = mapProducts(productsData || []);
-
-  const testimonials = getFeaturedTestimonials();
+  const categories = getCategories();
+  const products = getProducts({ status: "active" });
 
   return (
     <>
@@ -148,10 +127,10 @@ export default async function HomePage() {
         <Hero />
 
         {/* Categories Section */}
-        <CategoriesSection categories={categories as any[]} />
+        <CategoriesSection categories={categories} />
 
         {/* Unified Products Grid */}
-        <ProductsSection products={products} categories={categories as any[]} />
+        <ProductsSection products={products} categories={categories} />
 
         {/* How It Works */}
         <HowItWorks />

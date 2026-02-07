@@ -6,28 +6,22 @@ import { nanoid } from "nanoid";
 export async function POST(request: NextRequest) {
   try {
     // Verify webhook signature (IntaSend uses custom header)
-    const signature = request.headers.get("x-intasend-signature");
-    const webhookSecret = process.env.INTASEND_WEBHOOK_SECRET;
-
-    // For production, implement proper signature verification
+    // TODO: Implement proper signature verification for production
+    // const signature = request.headers.get("x-intasend-signature");
+    // const webhookSecret = process.env.INTASEND_WEBHOOK_SECRET;
     // const isValid = verifyWebhookSignature(signature, await request.text(), webhookSecret);
 
     const body = await request.json();
-    console.log("M-Pesa webhook received:", JSON.stringify(body, null, 2));
 
     const {
       invoice_id,
       state,
       api_ref: orderId,
       mpesa_reference,
-      charges,
-      value,
       failed_reason,
-      failed_code,
     } = body;
 
     if (!orderId) {
-      console.error("No order ID in webhook");
       return NextResponse.json({ success: false, error: "No order ID" }, { status: 400 });
     }
 
@@ -50,7 +44,6 @@ export async function POST(request: NextRequest) {
         .eq("id", orderId);
 
       if (error) {
-        console.error("Order update error:", error);
         return NextResponse.json({ success: false }, { status: 500 });
       }
 
@@ -74,7 +67,7 @@ export async function POST(request: NextRequest) {
             total: order.total,
             downloadToken,
           }),
-        }).catch(console.error);
+        }).catch(() => {});
       }
 
       return NextResponse.json({ success: true });
@@ -91,11 +84,9 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ success: true });
     }
 
-    // Unknown state - just log
-    console.log("Unknown payment state:", state);
+    // Unknown state
     return NextResponse.json({ success: true });
-  } catch (error) {
-    console.error("M-Pesa webhook error:", error);
+  } catch {
     return NextResponse.json(
       { error: "Internal server error" },
       { status: 500 }

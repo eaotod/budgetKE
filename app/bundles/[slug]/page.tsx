@@ -1,42 +1,29 @@
 import Link from "next/link";
 import { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { createClient } from "@/lib/supabase/server";
 import { Navbar } from "@/components/layout/navbar";
 import { Footer } from "@/components/layout/footer";
 import { Breadcrumbs, BreadcrumbJsonLd } from "@/components/ui/breadcrumbs";
-import { ProductCard } from "@/components/ui/product-card";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { Tick01Icon, PackageIcon } from "@hugeicons/core-free-icons";
 import { BundleInfo } from "@/components/product/bundle-info";
+import { getBundleBySlug, getBundleWithProducts } from "@/lib/catalog";
 
 interface BundlePageProps {
   params: Promise<{ slug: string }>;
 }
 
 export async function generateStaticParams() {
-  const supabase = await createClient();
-  const { data: bundles } = await supabase
-    .from("bundles")
-    .select("slug")
-    .eq("status", "active");
-  return (
-    bundles?.map((bundle) => ({
-      slug: bundle.slug,
-    })) || []
-  );
+  const { getBundles } = await import("@/lib/catalog");
+  const bundles = getBundles({ status: "active" });
+  return bundles.map((b) => ({ slug: b.slug }));
 }
 
 export async function generateMetadata({
   params,
 }: BundlePageProps): Promise<Metadata> {
   const resolvedParams = await params;
-  const supabase = await createClient();
-  const { data: bundle } = await supabase
-    .from("bundles")
-    .select("*")
-    .eq("slug", resolvedParams.slug)
-    .single();
+  const bundle = getBundleBySlug(resolvedParams.slug);
 
   if (!bundle) {
     return {
@@ -45,52 +32,25 @@ export async function generateMetadata({
   }
 
   return {
-    title: bundle.meta_title || `${bundle.name} | BudgetKE`,
-    description: bundle.meta_description || bundle.short_description,
+    title: bundle.metaTitle || `${bundle.name} | BudgetKE`,
+    description: bundle.metaDescription || bundle.shortDescription,
     openGraph: {
       title: bundle.name,
-      description: bundle.short_description,
-      images: bundle.thumbnail_url ? [bundle.thumbnail_url] : [],
+      description: bundle.shortDescription ?? bundle.description,
+      images: bundle.thumbnailUrl ? [bundle.thumbnailUrl] : [],
     },
   };
 }
 
 export default async function BundlePage({ params }: BundlePageProps) {
   const resolvedParams = await params;
-  const supabase = await createClient();
+  const bundle = getBundleWithProducts(resolvedParams.slug);
 
-  const { data: b } = await supabase
-    .from("bundles")
-    .select("*")
-    .eq("slug", resolvedParams.slug)
-    .single();
-
-  if (!b) {
+  if (!bundle) {
     notFound();
   }
 
-  const bundle = {
-    ...b,
-    shortDescription: b.short_description,
-    productIds: b.product_ids,
-    originalPrice: b.original_price,
-    bundlePrice: b.bundle_price,
-    thumbnailUrl: b.thumbnail_url,
-    isFeatured: b.is_featured,
-  };
-
-  // Get included products details
-  const { data: includedProductsData = [] } = await supabase
-    .from("products")
-    .select("*")
-    .in("id", bundle.productIds);
-
-  const includedProducts =
-    includedProductsData?.map((p) => ({
-      ...p,
-      shortDescription: p.short_description,
-      thumbnailUrl: p.thumbnail_url,
-    })) || [];
+  const includedProducts = bundle.products ?? [];
 
   const breadcrumbItems = [
     { label: "Bundles", href: "/bundles" },
@@ -146,7 +106,7 @@ export default async function BundlePage({ params }: BundlePageProps) {
               </div>
 
               {/* Info */}
-              <BundleInfo bundle={bundle as any} />
+              <BundleInfo bundle={bundle} />
             </div>
           </div>
         </div>
@@ -155,7 +115,7 @@ export default async function BundlePage({ params }: BundlePageProps) {
         <div className="max-w-6xl mx-auto px-6 py-16 lg:py-24">
           <div className="text-center mb-16">
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 text-primary text-[10px] font-black uppercase tracking-widest mb-6">
-              What's Inside
+              What&apos;s Inside
             </div>
             <h2 className="text-3xl md:text-4xl font-black text-gray-900 tracking-tight mb-6">
               {includedProducts.length} Premium Templates Included

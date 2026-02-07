@@ -6,9 +6,8 @@ import { usePathname } from "next/navigation";
 import { HugeiconsIcon } from "@hugeicons/react";
 import {
   DashboardCircleIcon,
-  PackageIcon,
-  AlignLeftIcon,
-  FolderFavouriteIcon,
+  ShoppingBag01Icon,
+  Comment01Icon,
   Settings02Icon,
   Logout01Icon,
   ArrowRight01Icon,
@@ -17,14 +16,8 @@ import { cn } from "@/lib/utils";
 
 const menuItems = [
   { icon: DashboardCircleIcon, label: "Overview", href: "/manage" },
-  { icon: PackageIcon, label: "Products", href: "/manage/products" },
-  {
-    icon: FolderFavouriteIcon,
-    label: "Categories",
-    href: "/manage/categories",
-  },
-  { icon: Settings02Icon, label: "Services", href: "/manage/services" },
-  { icon: AlignLeftIcon, label: "Bundles", href: "/manage/bundles" },
+  { icon: ShoppingBag01Icon, label: "Orders", href: "/manage/orders" },
+  { icon: Comment01Icon, label: "Reviews", href: "/manage/reviews" },
   { icon: Settings02Icon, label: "Settings", href: "/manage/settings" },
 ];
 
@@ -55,7 +48,7 @@ export function Sidebar() {
       </div>
 
       {/* Navigation */}
-      <nav className="flex-1 px-6 space-y-2">
+      <nav className="flex-1 px-6 space-y-1.5">
         {menuItems.map((item) => {
           const isActive = pathname === item.href;
           return (
@@ -63,7 +56,7 @@ export function Sidebar() {
               key={item.href}
               href={item.href}
               className={cn(
-                "group flex items-center justify-between px-4 py-3.5 rounded-2xl text-sm font-bold transition-all duration-300",
+                "group flex items-center justify-between px-4 py-3 rounded-2xl text-sm font-bold transition-all duration-300",
                 isActive
                   ? "bg-gray-900 text-white shadow-xl shadow-gray-200/50"
                   : "text-gray-500 hover:bg-gray-50 hover:text-gray-900",

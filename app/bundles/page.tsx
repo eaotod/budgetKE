@@ -5,9 +5,7 @@ import { Navbar } from "@/components/layout/navbar";
 import { Footer } from "@/components/layout/footer";
 import { Breadcrumbs, BreadcrumbJsonLd } from "@/components/ui/breadcrumbs";
 import { BundleCard } from "@/components/ui/bundle-card";
-import { createClient } from "@/lib/supabase/server";
-import { Badge } from "@/components/ui/badge";
-import { cn } from "@/lib/utils";
+import { getBundles } from "@/lib/catalog";
 import { FilterInput } from "@/components/ui/filter-input";
 import { Button } from "@/components/ui/button";
 import { HugeiconsIcon } from "@hugeicons/react";
@@ -38,32 +36,17 @@ export default async function BundlesPage({ searchParams }: BundlesPageProps) {
   const resolvedSearchParams = await searchParams;
   const searchQuery = resolvedSearchParams.search?.toLowerCase();
 
-  const supabase = await createClient();
-
-  let query = supabase.from("bundles").select("*").eq("status", "active");
-
+  let bundles = getBundles({ status: "active" });
   if (searchQuery) {
-    query = query.or(
-      `name.ilike.%${searchQuery}%,description.ilike.%${searchQuery}%,short_description.ilike.%${searchQuery}%`,
+    bundles = bundles.filter(
+      (b) =>
+        b.name.toLowerCase().includes(searchQuery) ||
+        (b.description && b.description.toLowerCase().includes(searchQuery)) ||
+        (b.shortDescription &&
+          b.shortDescription.toLowerCase().includes(searchQuery)),
     );
   }
-
-  const { data: bundlesData } = await query.order("created_at", {
-    ascending: false,
-  });
-
-  const filteredBundles =
-    bundlesData?.map((b) => ({
-      ...b,
-      shortDescription: b.short_description,
-      productIds: b.product_ids,
-      originalPrice: b.original_price,
-      bundlePrice: b.bundle_price,
-      thumbnailUrl: b.thumbnail_url,
-      isFeatured: b.is_featured,
-      metaTitle: b.meta_title,
-      metaDescription: b.meta_description,
-    })) || [];
+  const filteredBundles = bundles;
 
   const breadcrumbItems = [
     { label: "Bundles", href: "/bundles" },
@@ -88,7 +71,9 @@ export default async function BundlesPage({ searchParams }: BundlesPageProps) {
                 {searchQuery ? (
                   <>
                     Search Results for{" "}
-                    <span className="text-primary">"{searchQuery}"</span>
+                    <span className="text-primary">
+                      &quot;{searchQuery}&quot;
+                    </span>
                   </>
                 ) : (
                   "Value Bundles"
@@ -136,7 +121,7 @@ export default async function BundlesPage({ searchParams }: BundlesPageProps) {
           {filteredBundles.length > 0 ? (
             <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-8">
               {filteredBundles.map((bundle) => (
-                <BundleCard key={bundle.id} bundle={bundle as any} />
+                <BundleCard key={bundle.id} bundle={bundle} />
               ))}
             </div>
           ) : (
@@ -148,7 +133,7 @@ export default async function BundlesPage({ searchParams }: BundlesPageProps) {
                 No bundles found
               </h2>
               <p className="text-gray-500 font-medium mb-8 max-w-sm">
-                We couldn't find any bundles matching your search.
+                We couldn&apos;t find any bundles matching your search.
               </p>
               <Link href="/bundles">
                 <Button className="h-14 px-8 rounded-full bg-gray-900 hover:bg-gray-800 text-white font-bold shadow-xl shadow-gray-200">

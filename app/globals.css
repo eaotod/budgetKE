@@ -1,4 +1,5 @@
 @import "tailwindcss";
+@plugin "@tailwindcss/typography";
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
 
@@ -45,7 +46,7 @@
   --radius-2xl: calc(var(--radius) + 8px);
   --radius-3xl: calc(var(--radius) + 12px);
   --radius-4xl: calc(var(--radius) + 16px);
-  
+
   /* Container Configuration */
   --container-center: true;
   --container-padding: 2rem;
@@ -64,35 +65,35 @@
   --card-foreground: #061808;
   --popover: #ffffff;
   --popover-foreground: #061808;
-  
+
   /* BudgetKE Brand Colors - Deep Professional Green */
   --primary: #628141; /* Richer Emerald */
   --primary-foreground: #ffffff;
-  
+
   --secondary: oklch(0.96 0.01 145); /* Very light mint/gray */
   --secondary-foreground: oklch(0.35 0.08 145);
-  
+
   --accent: oklch(0.97 0.02 145);
   --accent-foreground: oklch(0.35 0.08 145);
-  
+
   --destructive: oklch(0.65 0.18 30);
   --destructive-foreground: #ffffff;
-  
+
   --muted: #f8fafc; /* Slate 50 */
   --muted-foreground: #676e8b; /* Slate 500 */
-  
+
   --border: #d6dad6; /* Slate 200 */
   --input: #e2e8f0;
   --ring: oklch(0.45 0.12 145);
-  
+
   --radius: 0.75rem; /* 12px */
-  
+
   --chart-1: oklch(0.45 0.12 145);
-  --chart-2: oklch(0.70 0.15 145);
-  --chart-3: oklch(0.85 0.10 85);
-  --chart-4: oklch(0.60 0.15 250);
-  --chart-5: oklch(0.50 0.10 300);
-  
+  --chart-2: oklch(0.7 0.15 145);
+  --chart-3: oklch(0.85 0.1 85);
+  --chart-4: oklch(0.6 0.15 250);
+  --chart-5: oklch(0.5 0.1 300);
+
   --sidebar: #f8fafc;
   --sidebar-foreground: #0f172a;
   --sidebar-primary: oklch(0.45 0.12 145);
@@ -103,13 +104,11 @@
   --sidebar-ring: oklch(0.45 0.12 145);
 }
 
-
-
 @layer base {
   * {
     @apply border-border outline-ring/50;
   }
-  
+
   body {
     @apply bg-background text-foreground;
     font-family: var(--font-sans);
@@ -142,5 +141,19 @@
 
   a {
     @apply transition-colors duration-200;
+  }
+
+  /* Custom Scrollbar */
+  ::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+
+  ::-webkit-scrollbar-track {
+    @apply bg-transparent;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    @apply bg-gray-300 rounded-full transition-colors hover:bg-gray-400;
   }
 }

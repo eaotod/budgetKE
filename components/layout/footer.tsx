@@ -35,8 +35,8 @@ export function Footer() {
       title: "Company",
       links: [
         { label: "Privacy Policy", href: "/privacy" },
-        { label: "Terms of Service", href: "/privacy" },
-        { label: "Refund Policy", href: "/privacy" },
+        { label: "Terms of Service", href: "/terms" },
+        { label: "Refund Policy", href: "/refund" },
       ],
     },
   };

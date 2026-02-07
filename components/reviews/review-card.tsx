@@ -8,7 +8,7 @@ import {
   UserIcon,
 } from "@hugeicons/core-free-icons";
 import { StarRating } from "@/components/ui/star-rating";
-import { Button } from "@/components/ui/button";
+// import { Button } from "@/components/ui/button";
 import type { Review } from "@/lib/types";
 import { cn } from "@/lib/utils";
 import { formatDistanceToNow } from "date-fns";
@@ -34,11 +34,16 @@ export function ReviewCard({ review, onHelpful, className }: ReviewCardProps) {
     : "Recently";
 
   return (
-    <div className={cn("bg-white border border-gray-100 rounded-xl p-6", className)}>
+    <div
+      className={cn(
+        "bg-white border border-gray-100 rounded-xl p-6",
+        className,
+      )}
+    >
       {/* Header */}
       <div className="flex items-start gap-4 mb-4">
         {/* Avatar */}
-        <div className="w-12 h-12 rounded-full bg-gray-100 flex items-center justify-center flex-shrink-0 overflow-hidden">
+        <div className="w-12 h-12 rounded-full bg-gray-100 flex items-center justify-center shrink-0 overflow-hidden">
           {review.authorAvatar ? (
             // eslint-disable-next-line @next/next/no-img-element
             <img
@@ -53,10 +58,15 @@ export function ReviewCard({ review, onHelpful, className }: ReviewCardProps) {
 
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2 flex-wrap">
-            <span className="font-semibold text-gray-900">{review.authorName}</span>
+            <span className="font-semibold text-gray-900">
+              {review.authorName}
+            </span>
             {review.isVerified && (
               <span className="inline-flex items-center gap-1 text-xs font-medium text-green-600 bg-green-50 px-2 py-0.5 rounded-full">
-                <HugeiconsIcon icon={CheckmarkCircle02Icon} className="w-3 h-3" />
+                <HugeiconsIcon
+                  icon={CheckmarkCircle02Icon}
+                  className="w-3 h-3"
+                />
                 Verified Purchase
               </span>
             )}
@@ -82,7 +92,9 @@ export function ReviewCard({ review, onHelpful, className }: ReviewCardProps) {
       {/* Admin Response */}
       {review.adminResponse && (
         <div className="bg-gray-50 rounded-lg p-4 mb-4 ml-6 border-l-4 border-primary">
-          <p className="text-sm font-semibold text-gray-900 mb-1">Response from BudgetKE</p>
+          <p className="text-sm font-semibold text-gray-900 mb-1">
+            Response from BudgetKE
+          </p>
           <p className="text-sm text-gray-600">{review.adminResponse}</p>
         </div>
       )}
@@ -96,14 +108,16 @@ export function ReviewCard({ review, onHelpful, className }: ReviewCardProps) {
             "flex items-center gap-1.5 text-sm transition-colors",
             isHelpfulClicked
               ? "text-primary cursor-default"
-              : "text-gray-500 hover:text-gray-700"
+              : "text-gray-500 hover:text-gray-700",
           )}
         >
           <HugeiconsIcon
             icon={ThumbsUpIcon}
             className={cn("w-4 h-4", isHelpfulClicked && "text-primary")}
           />
-          <span>Helpful ({review.helpfulCount + (isHelpfulClicked ? 1 : 0)})</span>
+          <span>
+            Helpful ({review.helpfulCount + (isHelpfulClicked ? 1 : 0)})
+          </span>
         </button>
       </div>
     </div>
@@ -117,7 +131,11 @@ interface ReviewSummaryProps {
   distribution?: { stars: number; count: number }[];
 }
 
-export function ReviewSummary({ rating, reviewCount, distribution }: ReviewSummaryProps) {
+export function ReviewSummary({
+  rating,
+  reviewCount,
+  distribution,
+}: ReviewSummaryProps) {
   // Default distribution if not provided
   const defaultDistribution = [
     { stars: 5, count: Math.round(reviewCount * 0.7) },
@@ -134,8 +152,14 @@ export function ReviewSummary({ rating, reviewCount, distribution }: ReviewSumma
     <div className="bg-gray-50 rounded-xl p-6">
       <div className="flex items-center gap-6 mb-6">
         <div className="text-center">
-          <div className="text-5xl font-bold text-gray-900">{rating.toFixed(1)}</div>
-          <StarRating rating={rating} size="md" className="justify-center mt-2" />
+          <div className="text-5xl font-bold text-gray-900">
+            {rating.toFixed(1)}
+          </div>
+          <StarRating
+            rating={rating}
+            size="md"
+            className="justify-center mt-2"
+          />
           <p className="text-sm text-gray-500 mt-1">
             {reviewCount.toLocaleString()} reviews
           </p>
@@ -148,10 +172,14 @@ export function ReviewSummary({ rating, reviewCount, distribution }: ReviewSumma
               <div className="flex-1 h-2 bg-gray-200 rounded-full overflow-hidden">
                 <div
                   className="h-full bg-yellow-400 rounded-full transition-all duration-500"
-                  style={{ width: maxCount > 0 ? `${(count / maxCount) * 100}%` : "0%" }}
+                  style={{
+                    width: maxCount > 0 ? `${(count / maxCount) * 100}%` : "0%",
+                  }}
                 />
               </div>
-              <span className="text-sm text-gray-500 w-8 text-right">{count}</span>
+              <span className="text-sm text-gray-500 w-8 text-right">
+                {count}
+              </span>
             </div>
           ))}
         </div>

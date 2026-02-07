@@ -40,10 +40,10 @@ export default async function ManagePage() {
     .select("email, total, payment_status, created_at")
     .gte("created_at", previousStart.toISOString());
 
-  const inCurrent = recentWindow.filter(
+  const inCurrent = (recentWindow || []).filter(
     (o) => new Date(o.created_at) >= currentStart,
   );
-  const inPrevious = recentWindow.filter(
+  const inPrevious = (recentWindow || []).filter(
     (o) =>
       new Date(o.created_at) >= previousStart &&
       new Date(o.created_at) < currentStart,
@@ -101,7 +101,7 @@ export default async function ManagePage() {
           Dashboard Overview
         </h1>
         <p className="text-gray-500 mt-2 font-medium">
-          Welcome back! Here's an overview of your business performance.
+          Welcome back! Here&apos;s an overview of your business performance.
         </p>
       </div>
 
@@ -158,7 +158,7 @@ export default async function ManagePage() {
           </button>
         </div>
         <div className="p-10">
-          {recentOrders.length === 0 ? (
+          {(recentOrders || []).length === 0 ? (
             <div className="flex flex-col items-center justify-center py-20 bg-gray-50/50 rounded-[2rem] border border-dashed border-gray-200">
               <div className="w-16 h-16 bg-white rounded-full flex items-center justify-center shadow-sm mb-6">
                 <HugeiconsIcon
@@ -170,12 +170,12 @@ export default async function ManagePage() {
                 No recent orders yet
               </p>
               <p className="text-xs text-gray-300 mt-2">
-                When customers start buying, they'll appear here.
+                When customers start buying, they&apos;ll appear here.
               </p>
             </div>
           ) : (
             <div className="space-y-4">
-              {recentOrders.map((order) => (
+              {(recentOrders || []).map((order) => (
                 <div
                   key={order.id}
                   className="flex flex-col md:flex-row md:items-center justify-between gap-4 p-5 rounded-2xl border border-gray-100 bg-white"

@@ -34,8 +34,7 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
     }
 
     return NextResponse.json({ success: true });
-  } catch (error) {
-    console.error("Helpful API error:", error);
+  } catch {
     return NextResponse.json(
       { error: "Internal server error" },
       { status: 500 }

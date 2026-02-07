@@ -2,6 +2,7 @@
 
 import { useMemo, useState } from "react";
 import Link from "next/link";
+import NextImage from "next/image";
 import { useDebounce } from "use-debounce";
 import { HugeiconsIcon } from "@hugeicons/react";
 import {
@@ -18,7 +19,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { DeleteAction } from "@/components/manage/delete-action";
+import { DeleteAction } from "./delete-action";
 
 interface BundleRow {
   id: string;
@@ -94,13 +95,18 @@ export function BundlesTable({ bundles }: { bundles: BundleRow[] }) {
                     <div className="flex items-center gap-4">
                       <div className="w-12 h-12 bg-gray-100 rounded-xl overflow-hidden flex-shrink-0 flex items-center justify-center text-gray-400 border border-gray-100">
                         {bundle.thumbnail_url ? (
-                          <img
+                          <NextImage
                             src={bundle.thumbnail_url}
                             alt=""
+                            width={48}
+                            height={48}
                             className="w-full h-full object-cover transition-transform group-hover:scale-110"
                           />
                         ) : (
-                          <HugeiconsIcon icon={PackageIcon} className="w-6 h-6" />
+                          <HugeiconsIcon
+                            icon={PackageIcon}
+                            className="w-6 h-6"
+                          />
                         )}
                       </div>
                       <div>
@@ -158,22 +164,34 @@ export function BundlesTable({ bundles }: { bundles: BundleRow[] }) {
                         className="p-2 text-gray-400 hover:text-primary transition-colors rounded-lg hover:bg-primary/5"
                         title="View Public Page"
                       >
-                        <HugeiconsIcon icon={LinkSquare01Icon} className="w-4 h-4" />
+                        <HugeiconsIcon
+                          icon={LinkSquare01Icon}
+                          className="w-4 h-4"
+                        />
                       </Link>
 
                       <DropdownMenu>
                         <DropdownMenuTrigger asChild>
                           <button className="p-2 text-gray-400 hover:text-gray-900 transition-colors rounded-lg hover:bg-gray-100">
-                            <HugeiconsIcon icon={MoreVerticalIcon} className="w-4 h-4" />
+                            <HugeiconsIcon
+                              icon={MoreVerticalIcon}
+                              className="w-4 h-4"
+                            />
                           </button>
                         </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end" className="w-40 rounded-xl">
+                        <DropdownMenuContent
+                          align="end"
+                          className="w-40 rounded-xl"
+                        >
                           <DropdownMenuItem asChild>
                             <Link
                               href={`/manage/bundles/edit/${bundle.id}`}
                               className="flex items-center gap-2 cursor-pointer font-medium p-2"
                             >
-                              <HugeiconsIcon icon={Edit02Icon} className="w-4 h-4 text-gray-500" />
+                              <HugeiconsIcon
+                                icon={Edit02Icon}
+                                className="w-4 h-4 text-gray-500"
+                              />
                               Edit Bundle
                             </Link>
                           </DropdownMenuItem>

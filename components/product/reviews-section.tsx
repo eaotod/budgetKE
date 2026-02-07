@@ -11,7 +11,7 @@ import {
   UserIcon,
 } from "@hugeicons/core-free-icons";
 import { Button } from "@/components/ui/button";
-import { ReviewCard, ReviewSummary } from "@/components/reviews/review-card";
+// import { ReviewCard } from "@/components/reviews/review-card";
 import { ReviewForm } from "@/components/reviews/review-form";
 import type { Review, Product } from "@/lib/types";
 
@@ -23,9 +23,6 @@ interface ReviewsSectionProps {
 
 const REVIEWS_PER_PAGE = 5;
 
-// Mock session check
-const IS_LOGGED_IN = true; // In real app, check auth
-
 export function ReviewsSection({
   product,
   reviews,
@@ -34,10 +31,7 @@ export function ReviewsSection({
   const [visibleCount, setVisibleCount] = useState(REVIEWS_PER_PAGE);
   const [showForm, setShowForm] = useState(false);
 
-  // Filter reviews to ensure they look "Verified"
-  const displayedReviews = reviews
-    .slice(0, visibleCount)
-    .map((r) => ({ ...r, verified: true }));
+  const displayedReviews = reviews.slice(0, visibleCount);
   const hasMore = reviews.length > visibleCount;
   const total = totalReviews ?? reviews.length;
 
@@ -46,19 +40,13 @@ export function ReviewsSection({
   };
 
   const handleReviewClick = () => {
-    if (!IS_LOGGED_IN) {
-      // In a real app, this would trigger a login modal or redirect
-      alert("Please log in to leave a review.");
-      return;
-    }
     setShowForm(!showForm);
   };
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const handleReviewSubmit = async (data: any) => {
-    // Adapter to match existing API but ignore title if not present
     const payload = {
       ...data,
-      title: "Review via Product Page", // Fallback title
     };
 
     try {
@@ -71,6 +59,7 @@ export function ReviewsSection({
       if (res.ok) {
         return { success: true };
       }
+      await res.json().catch(() => null);
       return { success: false, error: "Failed to submit review" };
     } catch {
       return { success: false, error: "Network error" };
@@ -82,27 +71,35 @@ export function ReviewsSection({
       <div className="max-w-4xl mx-auto px-6">
         <div className="flex flex-col md:flex-row items-center justify-between gap-8 mb-10 bg-gray-50/50 p-6 md:p-10 rounded-[2rem] border border-gray-100/50">
           <div className="text-center md:text-left">
-            <div className="flex items-center justify-center md:justify-start gap-3 text-4xl lg:text-5xl font-black text-gray-900 tracking-tight mb-2">
-              <span>{product.rating.toFixed(1)}</span>
-              <HugeiconsIcon
-                icon={StarIcon}
-                size={32}
-                className="fill-amber-400 text-amber-400"
-              />
-              <span className="text-gray-400 text-2xl font-bold">
-                ({total.toLocaleString()})
-              </span>
-            </div>
-            <div className="flex items-center justify-center md:justify-start gap-2">
-              <span className="text-sm font-black text-green-600 uppercase tracking-widest flex items-center gap-1.5">
-                <HugeiconsIcon
-                  icon={CheckmarkBadge01Icon}
-                  size={14}
-                  className="fill-green-600 text-white"
-                />
-                100% Verified Buyers
-              </span>
-            </div>
+            {total > 0 ? (
+              <>
+                <div className="flex items-center justify-center md:justify-start gap-3 text-4xl lg:text-5xl font-black text-gray-900 tracking-tight mb-2">
+                  <span>{product.rating.toFixed(1)}</span>
+                  <HugeiconsIcon
+                    icon={StarIcon}
+                    size={32}
+                    className="fill-amber-400 text-amber-400"
+                  />
+                  <span className="text-gray-400 text-2xl font-bold">
+                    ({total.toLocaleString()})
+                  </span>
+                </div>
+                <div className="flex items-center justify-center md:justify-start gap-2">
+                  <span className="text-sm font-black text-green-600 uppercase tracking-widest flex items-center gap-1.5">
+                    <HugeiconsIcon
+                      icon={CheckmarkBadge01Icon}
+                      size={14}
+                      className="fill-green-600 text-white"
+                    />
+                    100% Verified Buyers
+                  </span>
+                </div>
+              </>
+            ) : (
+              <h3 className="text-3xl font-black text-gray-900 tracking-tight mb-2">
+                Customer Reviews
+              </h3>
+            )}
           </div>
 
           <Button
@@ -115,7 +112,7 @@ export function ReviewsSection({
         </div>
 
         {/* Review form */}
-        {(showForm || total === 0) && (
+        {showForm && (
           <div className="mb-16 p-8 bg-gray-50 rounded-[2rem] border border-gray-100">
             <h3 className="text-xl font-black text-gray-900 mb-6 tracking-tight">
               How was your experience?
@@ -147,7 +144,7 @@ export function ReviewsSection({
                     <div>
                       <div className="font-bold text-gray-900 flex items-center gap-2">
                         {review.authorName}
-                        {review.verified && (
+                        {review.isVerified && (
                           <HugeiconsIcon
                             icon={CheckmarkBadge01Icon}
                             size={14}
@@ -156,7 +153,7 @@ export function ReviewsSection({
                         )}
                       </div>
                       <div className="text-xs font-bold text-gray-400 uppercase tracking-wider">
-                        Verified Purchase
+                        {review.isVerified ? "Verified Purchase" : "Customer"}
                       </div>
                     </div>
                   </div>
@@ -173,7 +170,11 @@ export function ReviewsSection({
                     ))}
                   </div>
                 </div>
-                <h4 className="font-bold text-gray-900 mb-2">{review.title}</h4>
+                {review.title && (
+                  <h4 className="font-bold text-gray-900 mb-2">
+                    {review.title}
+                  </h4>
+                )}
                 <p className="text-gray-600 leading-relaxed font-medium">
                   {review.content}
                 </p>

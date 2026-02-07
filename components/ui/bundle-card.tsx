@@ -5,6 +5,7 @@ import {
   ShoppingCart01Icon,
   FireIcon,
   PackageIcon,
+  Tick01Icon,
 } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { Badge } from "@/components/ui/badge";
@@ -19,7 +20,8 @@ interface BundleCardProps {
 }
 
 export function BundleCard({ bundle, className }: BundleCardProps) {
-  const addItem = useCartStore((state) => state.addItem);
+  const { addItem, items, openCart } = useCartStore();
+  const isInCart = items.some((item) => item.id === bundle.id);
 
   const handleAddToCart = (e: React.MouseEvent) => {
     e.preventDefault();
@@ -111,15 +113,36 @@ export function BundleCard({ bundle, className }: BundleCardProps) {
 
           {/* Add to Cart Circular Button */}
           <button
-            onClick={handleAddToCart}
-            className="group/btn relative w-12 h-12 flex items-center justify-center rounded-full bg-gray-50 hover:bg-primary text-gray-900 hover:text-white transition-all duration-300 shadow-sm hover:shadow-lg hover:shadow-primary/20"
-            aria-label="Add bundle to cart"
+            onClick={
+              isInCart
+                ? (e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    openCart();
+                  }
+                : handleAddToCart
+            }
+            className={cn(
+              "group/btn relative w-12 h-12 flex items-center justify-center rounded-full transition-all duration-300 shadow-sm",
+              isInCart
+                ? "bg-green-100 text-green-600 hover:bg-green-200 hover:shadow-green-100"
+                : "bg-gray-50 hover:bg-primary text-gray-900 hover:text-white hover:shadow-lg hover:shadow-primary/20",
+            )}
+            aria-label={isInCart ? "View bundle in cart" : "Add bundle to cart"}
           >
-            <HugeiconsIcon
-              icon={ShoppingCart01Icon}
-              size={20}
-              className="transition-transform group-hover/btn:scale-110"
-            />
+            {isInCart ? (
+              <HugeiconsIcon
+                icon={Tick01Icon}
+                size={20}
+                className="transition-transform group-hover/btn:scale-110"
+              />
+            ) : (
+              <HugeiconsIcon
+                icon={ShoppingCart01Icon}
+                size={20}
+                className="transition-transform group-hover/btn:scale-110"
+              />
+            )}
           </button>
         </div>
 

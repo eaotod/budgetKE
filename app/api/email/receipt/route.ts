@@ -40,7 +40,6 @@ export async function POST(request: NextRequest) {
 
     // MOCK MODE: If no API key, simulate success
     if (!resend) {
-      console.log("Resend API key missing, simulating email send for:", email);
       return NextResponse.json({ 
         success: true, 
         messageId: `mock-email-${Date.now()}`,
@@ -139,13 +138,11 @@ export async function POST(request: NextRequest) {
     });
 
     if (error) {
-      console.error("Resend error:", error);
       return NextResponse.json({ error: "Failed to send email" }, { status: 500 });
     }
 
     return NextResponse.json({ success: true, messageId: data?.id });
-  } catch (error) {
-    console.error("Receipt email error:", error);
+  } catch {
     return NextResponse.json({ error: "Internal server error" }, { status: 500 });
   }
 }

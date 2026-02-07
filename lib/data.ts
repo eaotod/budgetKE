@@ -4,12 +4,12 @@
 // ============================================
 
 import type { 
-  Product, 
-  Category, 
-  Bundle, 
-  Testimonial, 
+  Product,
+//   Category,
+//   Bundle,
+  Testimonial,
   ProductFAQ,
-  GlobalFAQ 
+  Service
 } from "./types";
 // ============================================
 // CATEGORIES
@@ -128,104 +128,68 @@ export const testimonials: Testimonial[] = [
 // PRODUCT FAQs
 // ============================================
 
-export const productFaqs: Record<string, ProductFAQ[]> = {
-  "budget-master-pro": [
+export const productFaqsByType: Record<
+  Product["productType"],
+  ProductFAQ[]
+> = {
+  template: [
     {
-      id: "bp-faq-1",
-      productId: "budget-master-pro",
+      id: "tpl-faq-1",
+      productId: "template",
       question: "Will this work on my phone?",
-      answer: "Yes! While the Excel version works best on desktop, the Google Sheets version is fully mobile-friendly. Download the Google Sheets app and you can add expenses on the go.",
+      answer:
+        "Yes. The Google Sheets version is mobile-friendly. For the best experience, use Excel on desktop and Google Sheets on mobile.",
       displayOrder: 1,
     },
     {
-      id: "bp-faq-2",
-      productId: "budget-master-pro",
-      question: "I've never used Excel before. Is this too complicated?",
-      answer: "Not at all! The template comes with a video tutorial that walks you through everything step by step. Most customers are up and running in under 15 minutes. You just need to type numbers — all calculations happen automatically.",
+      id: "tpl-faq-2",
+      productId: "template",
+      question: "I’m not good with Excel. Is it complicated?",
+      answer:
+        "Not at all. The template is guided and comes with a short demo/tutorial video. You mostly enter numbers — calculations and summaries happen automatically.",
       displayOrder: 2,
     },
     {
-      id: "bp-faq-3",
-      productId: "budget-master-pro",
-      question: "Can I customize the expense categories?",
-      answer: "Absolutely! The template comes with pre-set Kenyan categories (rent, utilities, school fees, M-Pesa, etc.) but you can rename, add, or delete any category to match your specific situation.",
+      id: "tpl-faq-3",
+      productId: "template",
+      question: "Can I customize categories and rows?",
+      answer:
+        "Yes. Everything is editable. You can rename categories, add rows, and tailor it to your workflow.",
       displayOrder: 3,
     },
     {
-      id: "bp-faq-5",
-      productId: "budget-master-pro",
+      id: "tpl-faq-4",
+      productId: "template",
       question: "Do I get free updates?",
-      answer: "Yes! When we release new versions of the Budget Planner, you'll receive an email with the download link at no extra cost. Your purchase includes lifetime updates.",
-      displayOrder: 5,
-    },
-  ],
-  "small-business-bookkeeper": [
-    {
-      id: "bb-faq-1",
-      productId: "small-business-bookkeeper",
-      question: "Do I need accounting knowledge to use this?",
-      answer: "No! This template is designed for business owners, not accountants. We use simple terms and the included guide explains everything in plain language. If you can use WhatsApp, you can use this.",
-      displayOrder: 1,
-    },
-    {
-      id: "bb-faq-2",
-      productId: "small-business-bookkeeper",
-      question: "Can I use this for multiple businesses?",
-      answer: "Each purchase covers one business. However, you can duplicate the file to track multiple businesses. For 3+ businesses, contact us about our multi-business license.",
-      displayOrder: 2,
-    },
-    {
-      id: "bb-faq-3",
-      productId: "small-business-bookkeeper",
-      question: "Does this work for VAT-registered businesses?",
-      answer: "Yes! There's a dedicated VAT tracking section. You can record input and output VAT, and the template calculates your net VAT payable/refundable automatically.",
-      displayOrder: 3,
-    },
-    {
-      id: "bb-faq-4",
-      productId: "small-business-bookkeeper",
-      question: "Will my accountant be able to use the reports?",
-      answer: "Definitely. The P&L and Balance Sheet follow standard accounting formats. Your accountant will appreciate the organized records when tax season comes.",
+      answer:
+        "Yes. When we improve a template, you’ll receive the updated version at no extra cost (per our update policy).",
       displayOrder: 4,
     },
   ],
-  "chamaa-manager": [
+  advanced_solution: [
     {
-      id: "cm-faq-1",
-      productId: "chamaa-manager",
-      question: "How many members can I track?",
-      answer: "The template supports unlimited members. Whether you have 10 or 100 members, it scales to your group size.",
+      id: "adv-faq-1",
+      productId: "advanced_solution",
+      question: "What exactly do I receive?",
+      answer:
+        "You receive the digital deliverable described on the product page (and any included documentation). If support is included, it will be stated clearly.",
       displayOrder: 1,
     },
     {
-      id: "cm-faq-2",
-      productId: "chamaa-manager",
-      question: "Can members view the records?",
-      answer: "Yes! You can share the Google Sheets version with view-only access so members can see their balances and history without editing. This builds trust and transparency.",
+      id: "adv-faq-2",
+      productId: "advanced_solution",
+      question: "Is setup included?",
+      answer:
+        "The product includes a demo/guide video and clear instructions. If you need custom onboarding, contact support for options.",
       displayOrder: 2,
     },
     {
-      id: "cm-faq-3",
-      productId: "chamaa-manager",
-      question: "Does it handle merry-go-round rotations?",
-      answer: "Yes! There's a dedicated section for merry-go-round (rotating savings) that tracks who received their payout and who's next in the rotation.",
+      id: "adv-faq-3",
+      productId: "advanced_solution",
+      question: "Can this be customized further?",
+      answer:
+        "Yes. Advanced solutions can be customized depending on your requirements. Reach out with details and we’ll advise the best approach.",
       displayOrder: 3,
-    },
-  ],
-  "mtumba-dashboard": [
-    {
-      id: "mi-faq-1",
-      productId: "mtumba-dashboard",
-      question: "I sell online. Does this work for Instagram/TikTok Mtumba?",
-      answer: "Absolutely! Whether you sell from Gikomba, a shop, or online, the tracking principles are the same. Log your bales, track individual pieces, and record sales from any channel.",
-      displayOrder: 1,
-    },
-    {
-      id: "mi-faq-2",
-      productId: "mtumba-dashboard",
-      question: "How do I track items from mixed bales?",
-      answer: "The template has a 'bale breakdown' section where you categorize items as you unpack. You can track by type (jeans, t-shirts, dresses) and quality grade.",
-      displayOrder: 2,
     },
   ],
 };
@@ -234,115 +198,12 @@ export const productFaqs: Record<string, ProductFAQ[]> = {
 // GLOBAL FAQs
 // ============================================
 
-export const globalFaqs: GlobalFAQ[] = [
-  // Payment
-  {
-    id: "gf-1",
-    category: "payment",
-    question: "How do I pay?",
-    answer: "We accept M-Pesa (Lipa na M-Pesa), Visa, Mastercard, and PayPal. M-Pesa is the easiest — just enter your phone number and approve the STK push on your phone.",
-    displayOrder: 1,
-    isFeatured: true,
-  },
-  {
-    id: "gf-2",
-    category: "payment",
-    question: "Is my payment secure?",
-    answer: "Absolutely. We use IntaSend, a licensed payment provider regulated by the Central Bank of Kenya. Your payment details are encrypted and never stored on our servers.",
-    displayOrder: 2,
-    isFeatured: true,
-  },
-  {
-    id: "gf-3",
-    category: "payment",
-    question: "Can I pay with Airtel Money or T-Kash?",
-    answer: "Currently we only support Safaricom M-Pesa for mobile payments. However, you can pay with any Visa or Mastercard from any bank.",
-    displayOrder: 3,
-    isFeatured: false,
-  },
-  // Downloads
-  {
-    id: "gf-4",
-    category: "downloads",
-    question: "How do I get my files after paying?",
-    answer: "Immediately after payment, you'll receive an email with your download link. The link is also shown on the success page. You can download up to 5 times.",
-    displayOrder: 1,
-    isFeatured: true,
-  },
-  {
-    id: "gf-5",
-    category: "downloads",
-    question: "What software do I need?",
-    answer: "Our templates work on Microsoft Excel (2016 or later) or Google Sheets (free). Most templates also include a PDF version that works on any device.",
-    displayOrder: 2,
-    isFeatured: true,
-  },
-  {
-    id: "gf-6",
-    category: "downloads",
-    question: "Can I use the templates on my phone?",
-    answer: "Yes! Download the free Google Sheets app and open the Google Sheets version of your template. It works great on both Android and iPhone.",
-    displayOrder: 3,
-    isFeatured: false,
-  },
-  {
-    id: "gf-7",
-    category: "downloads",
-    question: "How long do I have to download?",
-    answer: "Your download link is valid for 30 days after purchase. We recommend downloading immediately and saving to Google Drive or your computer for safekeeping.",
-    displayOrder: 4,
-    isFeatured: false,
-  },
-  // Returns
-  {
-    id: "gf-8",
-    category: "returns",
-    question: "What's your refund policy?",
-    answer: "Due to the digital nature of our products, we generally don't offer refunds once the file has been downloaded. However, if you have technical issues, contact us within 7 days and we'll help resolve them or issue a refund.",
-    displayOrder: 1,
-    isFeatured: true,
-  },
-  {
-    id: "gf-9",
-    category: "returns",
-    question: "What if the template doesn't work for me?",
-    answer: "If you're having trouble, email us at support@budgetke.com. We're happy to provide guidance, customization tips, or recommend a better-suited template. Most issues can be solved with a quick email exchange.",
-    displayOrder: 2,
-    isFeatured: false,
-  },
-  // General
-  {
-    id: "gf-10",
-    category: "general",
-    question: "Are these templates one-time purchases?",
-    answer: "Yes! You pay once and own the template forever. There are no subscriptions, monthly fees, or hidden charges. You also get free updates for life.",
-    displayOrder: 1,
-    isFeatured: true,
-  },
-  {
-    id: "gf-11",
-    category: "general",
-    question: "Can I share my template with others?",
-    answer: "Your purchase is for personal or single-business use. Sharing with friends or colleagues requires them to purchase their own license. We keep prices low so everyone can afford their own copy.",
-    displayOrder: 2,
-    isFeatured: false,
-  },
-  {
-    id: "gf-12",
-    category: "general",
-    question: "Do you offer custom templates?",
-    answer: "Yes! For businesses needing custom templates, we offer bespoke development services starting at KES 15,000. Contact us at custom@budgetke.com with your requirements.",
-    displayOrder: 3,
-    isFeatured: false,
-  },
-];
-
 // ============================================
 // HELPER FUNCTIONS
 // ============================================
 
-export function getProductFaqs(productId: string): ProductFAQ[] {
-  return productFaqs[productId] || [];
+export function getProductFaqs(): ProductFAQ[] {
+  return [];
 }
 
 export function getFeaturedTestimonials(): Testimonial[] {
@@ -353,12 +214,221 @@ export function getVideoTestimonials(): Testimonial[] {
   return testimonials.filter((t) => t.hasVideo);
 }
 
-export function getGlobalFaqsByCategory(category: GlobalFAQ["category"]): GlobalFAQ[] {
-  return globalFaqs.filter((f) => f.category === category).sort((a, b) => a.displayOrder - b.displayOrder);
+export function getProductFaqsByType(productType: Product["productType"]): ProductFAQ[] {
+  return (productFaqsByType[productType] || []).slice().sort((a, b) => a.displayOrder - b.displayOrder);
 }
 
-export function getFeaturedGlobalFaqs(): GlobalFAQ[] {
-  return globalFaqs.filter((f) => f.isFeatured);
+// ============================================
+// SERVICES (Static)
+// ============================================
+
+export const servicesByProductType: Record<Product["productType"], Service[]> = {
+  template: [
+    {
+      id: "custom-template-basic",
+      name: "Custom Excel/Sheets Template",
+      slug: "custom-excel-sheets-template",
+      tier: "basic",
+      priceMin: 15000,
+      priceMax: 30000,
+      currency: "KES",
+      timeline: "3-5 days",
+      shortDescription: "Fully customized Excel/Sheets template built to your exact specifications.",
+      description: "Get a professional template designed specifically for your business workflow. Includes consultation, unlimited revisions, and training.",
+      features: [
+        "1-2 consultation calls",
+        "Fully customized to your needs",
+        "Unlimited revisions",
+        "30 days support",
+        "Video tutorial included",
+      ],
+      deliverables: [
+        "Excel file (.xlsx)",
+        "Google Sheets version",
+        "Quick start PDF guide",
+        "Custom video walkthrough",
+      ],
+      status: "active",
+    },
+    {
+      id: "custom-template-advanced",
+      name: "Advanced Custom Template",
+      slug: "advanced-custom-template",
+      tier: "advanced",
+      priceMin: 30000,
+      priceMax: 60000,
+      currency: "KES",
+      timeline: "1-2 weeks",
+      shortDescription: "Complex templates with automations, macros, and API integrations.",
+      description: "For businesses needing advanced functionality including macros, scripts, multi-sheet systems, and external data connections.",
+      features: [
+        "Complex calculations & automations",
+        "Multiple connected sheets",
+        "Dashboard with live charts",
+        "Google Apps Script/VBA macros",
+        "API integrations where possible",
+        "60 days priority support",
+      ],
+      deliverables: [
+        "Complete Excel workbook",
+        "Google Sheets with Apps Script",
+        "Technical documentation",
+        "Training session (1 hour)",
+      ],
+      status: "active",
+    },
+  ],
+  advanced_solution: [
+    {
+      id: "custom-template-advanced",
+      name: "Advanced Custom Template",
+      slug: "advanced-custom-template",
+      tier: "advanced",
+      priceMin: 30000,
+      priceMax: 60000,
+      currency: "KES",
+      timeline: "1-2 weeks",
+      shortDescription: "Complex templates with automations, macros, and API integrations.",
+      description: "For businesses needing advanced functionality including macros, scripts, multi-sheet systems, and external data connections.",
+      features: [
+        "Complex calculations & automations",
+        "Multiple connected sheets",
+        "Dashboard with live charts",
+        "Google Apps Script/VBA macros",
+        "API integrations where possible",
+        "60 days priority support",
+      ],
+      deliverables: [
+        "Complete Excel workbook",
+        "Google Sheets with Apps Script",
+        "Technical documentation",
+        "Training session (1 hour)",
+      ],
+      status: "active",
+    },
+    {
+      id: "custom-pwa-basic",
+      name: "Simple Custom PWA",
+      slug: "simple-custom-pwa",
+      tier: "advanced",
+      priceMin: 60000,
+      priceMax: 120000,
+      currency: "KES",
+      timeline: "2-3 weeks",
+      shortDescription: "Offline-first Progressive Web App based on our proven templates.",
+      description: "A beautiful, installable web app that works offline. Perfect for businesses that need mobile access without app store complexity.",
+      features: [
+        "Based on existing template design",
+        "Custom branding (logo, colors)",
+        "Offline capability",
+        "Works on mobile & desktop",
+        "Auto-sync when online",
+        "90 days support",
+      ],
+      deliverables: [
+        "Hosted PWA application",
+        "Custom domain setup",
+        "User documentation",
+        "Admin training",
+      ],
+      status: "active",
+    },
+    {
+      id: "custom-pwa-advanced",
+      name: "Advanced Custom PWA",
+      slug: "advanced-custom-pwa",
+      tier: "premium",
+      priceMin: 150000,
+      priceMax: 300000,
+      currency: "KES",
+      timeline: "4-8 weeks",
+      shortDescription: "Fully custom PWA built from scratch with cloud backend and team features.",
+      description: "Enterprise-grade Progressive Web App with custom business logic, multi-user support, cloud sync, and payment integration.",
+      features: [
+        "Built from scratch",
+        "Complex business logic",
+        "Multi-user/team features",
+        "Cloud backend (Supabase)",
+        "Custom reporting & analytics",
+        "Payment integration (M-Pesa)",
+        "6 months priority support",
+      ],
+      deliverables: [
+        "Production-ready PWA",
+        "Cloud infrastructure setup",
+        "Source code (optional)",
+        "Full documentation",
+        "Team training sessions",
+      ],
+      status: "active",
+    },
+    {
+      id: "business-audit",
+      name: "Business Process Audit",
+      slug: "business-process-audit",
+      tier: "basic",
+      priceMin: 25000,
+      priceMax: 50000,
+      currency: "KES",
+      timeline: "1 week",
+      shortDescription: "Comprehensive analysis of your current systems with actionable recommendations.",
+      description: "We analyze your current business processes, identify inefficiencies, and provide a detailed roadmap for improvement with tool recommendations.",
+      features: [
+        "Current system analysis",
+        "Inefficiency identification",
+        "Tool recommendations",
+        "Implementation roadmap",
+        "ROI projections",
+      ],
+      deliverables: [
+        "Audit report (PDF)",
+        "Process flow diagrams",
+        "Recommended solutions",
+        "Priority action plan",
+      ],
+      status: "active",
+    },
+    {
+      id: "full-implementation",
+      name: "Complete System Implementation",
+      slug: "complete-system-implementation",
+      tier: "premium",
+      priceMin: 100000,
+      priceMax: 250000,
+      currency: "KES",
+      timeline: "1-3 months",
+      shortDescription: "End-to-end business system setup including tools, training, and ongoing support.",
+      description: "Full-service implementation including process mapping, custom tool development, team training, and 3 months of ongoing support.",
+      features: [
+        "Complete process mapping",
+        "Custom tool development",
+        "Team training (all staff)",
+        "Change management support",
+        "3 months ongoing support",
+        "Monthly progress reviews",
+      ],
+      deliverables: [
+        "All custom tools",
+        "Training materials",
+        "Process documentation",
+        "Support SLA",
+      ],
+      status: "active",
+    },
+  ],
+};
+
+export function getServicesByProductType(productType: Product["productType"]): Service[] {
+  return servicesByProductType[productType] || [];
+}
+
+export function getAllServices(): Service[] {
+  return [
+    ...servicesByProductType.template,
+    ...servicesByProductType.advanced_solution.filter(
+      (s) => s.id !== "custom-template-advanced" // Avoid duplicate
+    ),
+  ];
 }
 
 // Get bundled products with full product objects

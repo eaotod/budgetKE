@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import NextImage from "next/image";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { useForm } from "react-hook-form";
@@ -23,7 +24,12 @@ import {
 } from "@hugeicons/core-free-icons";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+import {
+  Field,
+  FieldLabel,
+  FieldError,
+  FieldDescription,
+} from "@/components/ui/field";
 import { Navbar } from "@/components/layout/navbar";
 import { Footer } from "@/components/layout/footer";
 import { useCartStore } from "@/lib/cart-store";
@@ -75,24 +81,20 @@ export default function CheckoutPage() {
     const pollInterval = 3000;
 
     const poll = async () => {
-      try {
-        const res = await fetch(`/api/orders/${orderId}/status`);
-        const data = await res.json();
+      const res = await fetch(`/api/orders/${orderId}/status`);
+      const data = await res.json();
 
-        if (data.status === "completed") {
-          setStep("success");
-          clearCart();
-        } else if (data.status === "failed") {
-          setStep("failed");
-          setError(data.error || "Payment failed. Please try again.");
-        } else if (pollingCount >= maxPolls) {
-          setStep("failed");
-          setError("Payment timeout. Please check your M-Pesa and try again.");
-        } else {
-          setPollingCount((prev) => prev + 1);
-        }
-      } catch {
-        console.error("Polling error");
+      if (data.status === "completed") {
+        setStep("success");
+        clearCart();
+      } else if (data.status === "failed") {
+        setStep("failed");
+        setError(data.error || "Payment failed. Please try again.");
+      } else if (pollingCount >= maxPolls) {
+        setStep("failed");
+        setError("Payment timeout. Please check your M-Pesa and try again.");
+      } else {
+        setPollingCount((prev) => prev + 1);
       }
     };
 
@@ -173,7 +175,14 @@ export default function CheckoutPage() {
 
           <div className="grid lg:grid-cols-12 gap-8 lg:gap-12">
             {/* Main Content Area */}
-            <div className="lg:col-span-7 order-2 lg:order-1">
+            <div
+              className={cn(
+                "order-2 lg:order-1",
+                step === "details"
+                  ? "lg:col-span-7"
+                  : "lg:col-span-12 max-w-2xl mx-auto w-full",
+              )}
+            >
               {step === "details" && (
                 <div className="bg-white rounded-[2.5rem] border border-gray-100 p-8 md:p-10 shadow-xl shadow-gray-200/50 animate-in fade-in duration-300">
                   <div className="flex items-center gap-4 mb-8">
@@ -198,18 +207,13 @@ export default function CheckoutPage() {
                       </h2>
 
                       <div className="grid gap-6">
-                        <div className="space-y-2">
-                          <Label
-                            htmlFor="email"
-                            className="font-bold text-gray-700 ml-1"
-                          >
-                            Email Address
-                          </Label>
+                        <Field data-invalid={!!errors.email}>
+                          <FieldLabel htmlFor="email">Email Address</FieldLabel>
                           <div className="relative">
                             <HugeiconsIcon
                               icon={Mail01Icon}
                               size={20}
-                              className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400"
+                              className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 z-10"
                             />
                             <Input
                               id="email"
@@ -223,30 +227,24 @@ export default function CheckoutPage() {
                               )}
                             />
                           </div>
-                          {errors.email ? (
-                            <p className="text-sm text-red-500 font-medium ml-1 flex items-center gap-1.5">
-                              <HugeiconsIcon icon={AlertCircleIcon} size={14} />
-                              {errors.email.message}
-                            </p>
-                          ) : (
-                            <p className="text-xs text-gray-400 font-medium ml-1">
-                              We'll send your receipt and download link here
-                            </p>
+                          {!errors.email && (
+                            <FieldDescription>
+                              We&apos;ll send your receipt and download link
+                              here
+                            </FieldDescription>
                           )}
-                        </div>
+                          <FieldError errors={[errors.email]} />
+                        </Field>
 
-                        <div className="space-y-2">
-                          <Label
-                            htmlFor="customerName"
-                            className="font-bold text-gray-700 ml-1"
-                          >
+                        <Field>
+                          <FieldLabel htmlFor="customerName">
                             Full Name (Optional)
-                          </Label>
+                          </FieldLabel>
                           <div className="relative">
                             <HugeiconsIcon
                               icon={UserIcon}
                               size={20}
-                              className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400"
+                              className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 z-10"
                             />
                             <Input
                               id="customerName"
@@ -255,7 +253,7 @@ export default function CheckoutPage() {
                               className="pl-12 h-14 rounded-2xl border-gray-200 bg-gray-50/50 focus:bg-white transition-all text-base"
                             />
                           </div>
-                        </div>
+                        </Field>
                       </div>
                     </div>
 
@@ -268,9 +266,11 @@ export default function CheckoutPage() {
                       <div className="bg-green-50/50 border border-green-100 rounded-3xl p-6">
                         <div className="flex items-center gap-4 mb-4">
                           <div className="w-14 h-9 bg-white border border-green-100 rounded-xl flex items-center justify-center shadow-sm">
-                            <img
+                            <NextImage
                               src="/images/icons/mpesa.svg"
                               alt="M-Pesa"
+                              width={32}
+                              height={24}
                               className="h-6 w-auto"
                             />
                           </div>
@@ -284,18 +284,17 @@ export default function CheckoutPage() {
                           </div>
                         </div>
 
-                        <div className="space-y-2">
-                          <Label
-                            htmlFor="phone"
-                            className="font-bold text-gray-700 ml-1"
-                          >
+                        <Field data-invalid={!!errors.phone}>
+                          <FieldLabel htmlFor="phone">
                             M-Pesa Phone Number
-                          </Label>
+                          </FieldLabel>
                           <div className="relative">
-                            <div className="absolute left-4 top-1/2 -translate-y-1/2 flex items-center gap-2 pointer-events-none">
-                              <img
+                            <div className="absolute left-4 top-1/2 -translate-y-1/2 flex items-center gap-2 pointer-events-none z-10">
+                              <NextImage
                                 src="/images/icons/kenya.svg"
                                 alt="KE"
+                                width={24}
+                                height={16}
                                 className="w-6 h-auto rounded-sm shadow-sm"
                               />
                             </div>
@@ -310,21 +309,18 @@ export default function CheckoutPage() {
                               )}
                             />
                           </div>
-                          {errors.phone && (
-                            <p className="text-sm text-red-500 font-medium ml-1 flex items-center gap-1.5">
-                              <HugeiconsIcon icon={AlertCircleIcon} size={14} />
-                              {errors.phone.message}
-                            </p>
+                          {!errors.phone && (
+                            <FieldDescription className="text-green-700 font-bold flex items-center gap-1">
+                              <HugeiconsIcon
+                                icon={FlashIcon}
+                                size={12}
+                                className="fill-green-600"
+                              />
+                              You will receive an STK push on your phone
+                            </FieldDescription>
                           )}
-                          <p className="text-xs text-green-700 font-bold ml-1 flex items-center gap-1">
-                            <HugeiconsIcon
-                              icon={FlashIcon}
-                              size={12}
-                              className="fill-green-600"
-                            />
-                            You will receive an STK push on your phone
-                          </p>
-                        </div>
+                          <FieldError errors={[errors.phone]} />
+                        </Field>
                       </div>
                     </div>
 
@@ -382,8 +378,8 @@ export default function CheckoutPage() {
                     Check your phone
                   </h2>
                   <p className="text-gray-500 font-medium text-lg mb-8 max-w-md mx-auto">
-                    We've sent an M-Pesa payment request to your phone number.
-                    Please enter your PIN to complete the transaction.
+                    We&apos;ve sent an M-Pesa payment request to your phone
+                    number. Please enter your PIN to complete the transaction.
                   </p>
                   <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-gray-50 text-gray-500 font-bold text-xs uppercase tracking-widest animate-pulse">
                     <HugeiconsIcon
@@ -409,7 +405,7 @@ export default function CheckoutPage() {
                     Payment Successful!
                   </h2>
                   <p className="text-gray-500 font-medium text-lg mb-10 max-w-md mx-auto">
-                    Thank you for your purchase. We've sent the receipt and
+                    Thank you for your purchase. We&apos;ve sent the receipt and
                     download links to your email.
                   </p>
                   <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
@@ -538,8 +534,8 @@ export default function CheckoutPage() {
                       className="shrink-0 mt-0.5"
                     />
                     <p>
-                      Your purchase is protected by our 30-day money-back
-                      guarantee. If you're not satisfied, we'll refund you.
+                      Due to the nature of digital products, all sales are
+                      final. Please review your order carefully before paying.
                     </p>
                   </div>
                 </div>

@@ -4,7 +4,6 @@ import { useState, useEffect, useRef } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useDebounce } from "use-debounce";
 import Link from "next/link";
-import { createClient } from "@/lib/supabase/client";
 import { HugeiconsIcon } from "@hugeicons/react";
 import {
   Search01Icon,
@@ -61,12 +60,12 @@ export function Search({ className, variant = "minimal" }: SearchProps) {
     if (urlQuery !== query && !isOpen) {
       setQuery(urlQuery);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchParams]);
 
-  // Fetch results when debounced query changes
+  // Fetch results when debounced query changes (catalog API)
   useEffect(() => {
     async function fetchResults() {
-      // Don't search if query is empty or too short
       if (!debouncedQuery || debouncedQuery.length < 2) {
         setResults([]);
         if (debouncedQuery === "") setIsOpen(false);
@@ -75,35 +74,14 @@ export function Search({ className, variant = "minimal" }: SearchProps) {
 
       setIsLoading(true);
       try {
-        const supabase = createClient();
-        const { data, error } = await supabase
-          .from("products")
-          .select("id, name, price, slug, thumbnail_url, category_id, status")
-          .eq("status", "active")
-          .or(
-            `name.ilike.%${debouncedQuery}%,description.ilike.%${debouncedQuery}%`,
-          )
-          .limit(5);
+        const res = await fetch(
+          `/api/search?q=${encodeURIComponent(debouncedQuery)}`,
+        );
+        const data = await res.json();
 
-        if (error) throw error;
-
-        // Map database fields to SearchResult interface
-        const mappedResults: SearchResult[] = (data || []).map((p: any) => ({
-          id: p.id,
-          name: p.name,
-          category: p.category_id, // category_id is the foreign key, strictly we might want the name but ID is okay for display context or we fetch it.
-          // For search dropdown result "Category" usually looks better as a name.
-          // But for now, let's use category_id or fetch category name.
-          // Let's keep it simple and use category_id as "category" (it's usually readable slug-like)
-          price: p.price,
-          slug: p.slug,
-          image: p.thumbnail_url,
-        }));
-
-        setResults(mappedResults);
+        setResults(Array.isArray(data) ? data : []);
         setIsOpen(true);
-      } catch (error) {
-        console.error("Search failed", error);
+      } catch {
         setResults([]);
       } finally {
         setIsLoading(false);
@@ -265,7 +243,7 @@ export function Search({ className, variant = "minimal" }: SearchProps) {
                     setIsOpen(false);
                   }}
                 >
-                  View all results for "{query}"
+                  View all results for &quot;{query}&quot;
                   <HugeiconsIcon icon={ArrowRight02Icon} size={14} />
                 </Button>
               </div>

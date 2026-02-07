@@ -1,6 +1,5 @@
 import { createServerClient, type CookieOptions } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
-import { isAdminEmail } from "@/lib/auth/admin";
 
 export async function proxy(request: NextRequest) {
   let response = NextResponse.next({
@@ -61,9 +60,7 @@ export async function proxy(request: NextRequest) {
 
   // Protect /manage routes - require authenticated admin
   if (request.nextUrl.pathname.startsWith("/manage")) {
-    const isAdmin =
-      user &&
-      (user.user_metadata?.role === "admin" || isAdminEmail(user.email));
+    const isAdmin = user?.user_metadata?.role === "admin";
 
     if (!isAdmin) {
       const next = encodeURIComponent(request.nextUrl.pathname);

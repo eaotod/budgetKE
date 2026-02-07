@@ -5,14 +5,13 @@ import { Navbar } from "@/components/layout/navbar";
 import { Footer } from "@/components/layout/footer";
 import { Breadcrumbs, BreadcrumbJsonLd } from "@/components/ui/breadcrumbs";
 import { ProductCard } from "@/components/ui/product-card";
-import { createClient } from "@/lib/supabase/server";
+import { getCategories, getProducts } from "@/lib/catalog";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 import { FilterInput } from "@/components/ui/filter-input";
 import { Button } from "@/components/ui/button";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { Cancel01Icon } from "@hugeicons/core-free-icons";
-import { mapProducts } from "@/lib/mappers";
 
 export const metadata: Metadata = {
   title:
@@ -47,41 +46,27 @@ export default async function TemplatesPage({
   const page = parseInt(resolvedSearchParams.page || "1", 10);
   const pageSize = 8;
 
-  const supabase = await createClient();
-
-  // 1. Fetch Categories
-  const { data: categories } = await supabase
-    .from("categories")
-    .select("*")
-    .order("display_order", { ascending: true });
-
-  // 2. Fetch Products with filtering
-  let query = supabase
-    .from("products")
-    .select("*", { count: "exact" })
-    .eq("status", "active");
+  const categories = getCategories();
+  let products = getProducts({ status: "active" });
 
   if (selectedCategory) {
-    query = query.eq("category_id", selectedCategory);
+    products = products.filter((p) => p.categoryId === selectedCategory);
   }
-
   if (searchQuery) {
-    query = query.or(
-      `name.ilike.%${searchQuery}%,description.ilike.%${searchQuery}%,short_description.ilike.%${searchQuery}%`,
+    const q = searchQuery.toLowerCase();
+    products = products.filter(
+      (p) =>
+        p.name.toLowerCase().includes(q) ||
+        p.description.toLowerCase().includes(q) ||
+        p.shortDescription.toLowerCase().includes(q),
     );
   }
 
-  const { data: products, count: totalProducts } = await query
-    .order("created_at", { ascending: false })
-    .range((page - 1) * pageSize, page * pageSize - 1);
-
-  const activeCategory = categories?.find((c) => c.slug === selectedCategory);
-
-  // Pagination
-  const totalPages = Math.ceil((totalProducts || 0) / pageSize);
+  const totalProducts = products.length;
+  const totalPages = Math.ceil(totalProducts / pageSize);
   const start = (page - 1) * pageSize;
-
-  const filteredProducts = mapProducts(products || []);
+  const filteredProducts = products.slice(start, start + pageSize);
+  const activeCategory = categories.find((c) => c.slug === selectedCategory);
 
   const breadcrumbItems = [
     { label: "Templates", href: "/templates" },
@@ -107,7 +92,9 @@ export default async function TemplatesPage({
                 {searchQuery ? (
                   <>
                     Search Results for{" "}
-                    <span className="text-primary">"{searchQuery}"</span>
+                    <span className="text-primary">
+                      &quot;{searchQuery}&quot;
+                    </span>
                   </>
                 ) : activeCategory ? (
                   activeCategory.name
@@ -181,8 +168,8 @@ export default async function TemplatesPage({
           <div className="flex items-center justify-between mb-8">
             <p className="text-sm font-bold text-gray-400 uppercase tracking-wider">
               Showing {start + 1}-
-              {Math.min(start + pageSize, totalProducts || 0)} of{" "}
-              {totalProducts || 0} templates
+              {Math.min(start + filteredProducts.length, totalProducts)} of{" "}
+              {totalProducts} templates
             </p>
             {(selectedCategory || searchQuery) && (
               <Link
@@ -201,7 +188,7 @@ export default async function TemplatesPage({
               <div className="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
                 {filteredProducts.map((product) => (
                   // We can wrap ProductCard to add some entry animation if desired
-                  <ProductCard key={product.id} product={product as any} />
+                  <ProductCard key={product.id} product={product} />
                 ))}
               </div>
 
@@ -248,8 +235,8 @@ export default async function TemplatesPage({
                 No templates found
               </h2>
               <p className="text-gray-500 font-medium mb-8 max-w-sm">
-                We couldn't find exactly what you're looking for. Try adjusting
-                your search or filters.
+                We couldn&apos;t find exactly what you&apos;re looking for. Try
+                adjusting your search or filters.
               </p>
               <Link href="/templates">
                 <Button className="h-14 px-8 rounded-full bg-gray-900 hover:bg-gray-800 text-white font-bold shadow-xl shadow-gray-200">

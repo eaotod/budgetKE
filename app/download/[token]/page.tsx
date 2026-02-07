@@ -53,16 +53,22 @@ export default async function DownloadPage({ params }: DownloadPageProps) {
           <div className="container mx-auto px-4">
             <div className="max-w-md mx-auto text-center py-16">
               <div className="w-20 h-20 bg-yellow-100 rounded-full flex items-center justify-center mx-auto mb-6">
-                <HugeiconsIcon icon={Clock01Icon} className="w-10 h-10 text-yellow-600" />
+                <HugeiconsIcon
+                  icon={Clock01Icon}
+                  className="w-10 h-10 text-yellow-600"
+                />
               </div>
               <h1 className="text-2xl font-bold text-gray-900 mb-4">
                 Payment Pending
               </h1>
               <p className="text-gray-600 mb-6">
-                Your payment hasn't been confirmed yet. If you've already paid, 
-                please wait a few minutes and refresh this page.
+                Your payment hasn&apos;t been confirmed yet. If you&apos;ve
+                already paid, please wait a few minutes and refresh this page.
               </p>
-              <Button onClick={() => window.location.reload()} className="rounded-full px-8">
+              <Button
+                onClick={() => window.location.reload()}
+                className="rounded-full px-8"
+              >
                 Refresh Page
               </Button>
             </div>
@@ -86,16 +92,22 @@ export default async function DownloadPage({ params }: DownloadPageProps) {
           <div className="container mx-auto px-4">
             <div className="max-w-md mx-auto text-center py-16">
               <div className="w-20 h-20 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-6">
-                <HugeiconsIcon icon={Alert01Icon} className="w-10 h-10 text-red-600" />
+                <HugeiconsIcon
+                  icon={Alert01Icon}
+                  className="w-10 h-10 text-red-600"
+                />
               </div>
               <h1 className="text-2xl font-bold text-gray-900 mb-4">
                 Download Limit Reached
               </h1>
               <p className="text-gray-600 mb-6">
-                You've reached the maximum download limit for this order. 
+                You&apos;ve reached the maximum download limit for this order.
                 Contact support if you need additional downloads.
               </p>
-              <Link href="mailto:support@budget.ke" className="text-primary hover:underline">
+              <Link
+                href="mailto:support@budget.ke"
+                className="text-primary hover:underline"
+              >
                 Contact Support
               </Link>
             </div>
@@ -123,20 +135,24 @@ export default async function DownloadPage({ params }: DownloadPageProps) {
             {/* Success header */}
             <div className="text-center mb-8">
               <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
-                <HugeiconsIcon icon={CheckmarkCircle02Icon} className="w-10 h-10 text-green-600" />
+                <HugeiconsIcon
+                  icon={CheckmarkCircle02Icon}
+                  className="w-10 h-10 text-green-600"
+                />
               </div>
               <h1 className="text-2xl font-bold text-gray-900 mb-2">
                 Your Downloads Are Ready!
               </h1>
-              <p className="text-gray-600">
-                Order #{order.order_number}
-              </p>
+              <p className="text-gray-600">Order #{order.order_number}</p>
             </div>
 
             {/* Download card */}
             <div className="bg-white rounded-2xl shadow-sm p-6 mb-6">
               <h2 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
-                <HugeiconsIcon icon={Xls01Icon} className="w-5 h-5 text-primary" />
+                <HugeiconsIcon
+                  icon={Xls01Icon}
+                  className="w-5 h-5 text-primary"
+                />
                 Your Files
               </h2>
 
@@ -151,13 +167,25 @@ export default async function DownloadPage({ params }: DownloadPageProps) {
                         📊
                       </div>
                       <div>
-                        <h3 className="font-medium text-gray-900">{item.name}</h3>
-                        <p className="text-sm text-gray-500">Excel & Google Sheets</p>
+                        <h3 className="font-medium text-gray-900">
+                          {item.name}
+                        </h3>
+                        <p className="text-sm text-gray-500">
+                          Excel & Google Sheets
+                        </p>
                       </div>
                     </div>
                     <form action={`/api/download/${token}/${item.productId}`}>
-                      <Button type="submit" variant="outline" size="sm" className="rounded-full">
-                        <HugeiconsIcon icon={Download01Icon} className="w-4 h-4 mr-2" />
+                      <Button
+                        type="submit"
+                        variant="outline"
+                        size="sm"
+                        className="rounded-full"
+                      >
+                        <HugeiconsIcon
+                          icon={Download01Icon}
+                          className="w-4 h-4 mr-2"
+                        />
                         Download
                       </Button>
                     </form>
@@ -168,14 +196,17 @@ export default async function DownloadPage({ params }: DownloadPageProps) {
               <div className="mt-6 pt-4 border-t border-gray-100">
                 <p className="text-sm text-gray-500 flex items-center gap-2">
                   <HugeiconsIcon icon={Download01Icon} className="w-4 h-4" />
-                  {downloadsRemaining} download{downloadsRemaining !== 1 ? "s" : ""} remaining
+                  {downloadsRemaining} download
+                  {downloadsRemaining !== 1 ? "s" : ""} remaining
                 </p>
               </div>
             </div>
 
             {/* Instructions */}
             <div className="bg-blue-50 border border-blue-100 rounded-xl p-6">
-              <h3 className="font-semibold text-blue-900 mb-3">Quick Start Guide</h3>
+              <h3 className="font-semibold text-blue-900 mb-3">
+                Quick Start Guide
+              </h3>
               <ol className="space-y-2 text-sm text-blue-800">
                 <li className="flex gap-2">
                   <span className="font-semibold">1.</span>
@@ -187,7 +218,7 @@ export default async function DownloadPage({ params }: DownloadPageProps) {
                 </li>
                 <li className="flex gap-2">
                   <span className="font-semibold">3.</span>
-                  Follow the instructions in the "Start Here" tab
+                  Follow the instructions in the &quot;Start Here&quot; tab
                 </li>
                 <li className="flex gap-2">
                   <span className="font-semibold">4.</span>
@@ -198,7 +229,10 @@ export default async function DownloadPage({ params }: DownloadPageProps) {
 
             {/* Back to shop */}
             <div className="text-center mt-8">
-              <Link href="/templates" className="text-primary font-medium hover:underline">
+              <Link
+                href="/templates"
+                className="text-primary font-medium hover:underline"
+              >
                 ← Browse More Templates
               </Link>
             </div>

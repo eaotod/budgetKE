@@ -1,18 +1,19 @@
 import { redirect } from "next/navigation";
 import { createServerClient } from "@supabase/ssr";
 import { cookies } from "next/headers";
+import Link from "next/link";
 import { Navbar } from "@/components/layout/navbar";
 import { Footer } from "@/components/layout/footer";
 import { Button } from "@/components/ui/button";
 import { HugeiconsIcon } from "@hugeicons/react";
 import {
+  DashboardCircleIcon,
   Logout01Icon,
-  Download01Icon,
   ShoppingBag01Icon,
   UserCircleIcon,
 } from "@hugeicons/core-free-icons";
 import { createAdminClient } from "@/lib/supabase/admin";
-import type { Order } from "@/lib/types";
+import { OrderCard } from "@/components/account/order-card";
 
 export default async function AccountPage() {
   const cookieStore = await cookies();
@@ -36,6 +37,8 @@ export default async function AccountPage() {
     redirect("/login");
   }
 
+  const isAdmin = user.user_metadata?.role === "admin";
+
   const adminSupabase = createAdminClient();
   const { data: orders = [] } = await adminSupabase
     .from("orders")
@@ -43,13 +46,18 @@ export default async function AccountPage() {
     .eq("email", user.email)
     .order("created_at", { ascending: false });
 
-  const formattedOrders = (orders as Order[]).map((order) => ({
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const formattedOrders = (orders || []).map((order: any) => ({
+    uuid: order.id,
     id: order.orderNumber || order.order_number || order.id,
-    date: order.createdAt || (order.created_at as unknown as string),
+    date: order.createdAt || order.created_at,
+    email: order.email,
     total: order.total,
-    status: order.paymentStatus || (order.payment_status as any),
+    status: order.paymentStatus || order.payment_status,
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     downloadToken: (order as any).download_token || order.downloadToken,
-    items: (order.items || []).map((item) => ({
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    items: (order.items || []).map((item: any) => ({
       name: item.name,
       productId: item.productId,
       bundleId: item.bundleId,
@@ -73,15 +81,29 @@ export default async function AccountPage() {
                 {user.email}
               </div>
             </div>
-            <form action="/auth/signout" method="post">
-              <Button
-                variant="outline"
-                className="rounded-xl border-gray-200 hover:bg-gray-100 text-gray-700 font-bold"
-              >
-                <HugeiconsIcon icon={Logout01Icon} size={18} className="mr-2" />
-                Sign Out
-              </Button>
-            </form>
+            <div className="flex items-center gap-3">
+              {isAdmin && (
+                <Link href="/manage">
+                  <Button className="rounded-xl font-bold">
+                    <HugeiconsIcon
+                      icon={DashboardCircleIcon}
+                      size={18}
+                      className="mr-2"
+                    />
+                    Dashboard
+                  </Button>
+                </Link>
+              )}
+              <form action="/auth/signout" method="post">
+                <Button
+                  variant="outline"
+                  className="rounded-xl border-gray-200 hover:bg-gray-100 text-gray-700 font-bold"
+                >
+                  <HugeiconsIcon icon={Logout01Icon} size={18} className="mr-2" />
+                  Sign Out
+                </Button>
+              </form>
+            </div>
           </div>
 
           {/* Content */}
@@ -102,53 +124,7 @@ export default async function AccountPage() {
                   {formattedOrders.length > 0 ? (
                     <div className="space-y-6">
                       {formattedOrders.map((order) => (
-                        <div
-                          key={order.id}
-                          className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-6 rounded-2xl bg-gray-50 border border-gray-100"
-                        >
-                          <div>
-                            <div className="flex items-center gap-3 mb-2">
-                              <span className="font-bold text-gray-900">
-                                {order.id}
-                              </span>
-                              <span className="px-2 py-0.5 rounded-full bg-green-100 text-green-700 text-[10px] font-bold uppercase tracking-wider">
-                                {order.status}
-                              </span>
-                            </div>
-                            <p className="text-sm text-gray-500 mb-1">
-                              {new Date(order.date).toLocaleDateString("en-KE", {
-                                year: "numeric",
-                                month: "short",
-                                day: "numeric",
-                              })}{" "}
-                              • KES {order.total.toLocaleString()}
-                            </p>
-                            <p className="text-sm font-medium text-gray-700">
-                              {order.items.map((i) => i.name).join(", ")}
-                            </p>
-                          </div>
-                          <div className="flex flex-wrap gap-2">
-                            {order.items.map((item, idx) => (
-                              <form
-                                key={idx}
-                                action={`/api/download/${order.downloadToken}/${item.productId || item.bundleId}`}
-                              >
-                                <Button
-                                  size="sm"
-                                  className="rounded-xl font-bold"
-                                  disabled={!order.downloadToken}
-                                >
-                                  <HugeiconsIcon
-                                    icon={Download01Icon}
-                                    size={16}
-                                    className="mr-2"
-                                  />
-                                  Download {item.type}
-                                </Button>
-                              </form>
-                            ))}
-                          </div>
-                        </div>
+                        <OrderCard key={order.uuid} order={order} />
                       ))}
                     </div>
                   ) : (
@@ -168,7 +144,7 @@ export default async function AccountPage() {
                 <h3 className="font-bold text-gray-900 mb-4">Need Help?</h3>
                 <p className="text-sm text-gray-500 mb-6 leading-relaxed">
                   Having trouble with a download or need support with a
-                  template? We're here to help.
+                  template? We&apos;re here to help.
                 </p>
                 <Button
                   variant="outline"

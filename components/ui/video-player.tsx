@@ -8,11 +8,12 @@ import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { VisuallyHidden } from "@radix-ui/react-visually-hidden";
 
 interface VideoPlayerProps {
-  videoUrl: string;
+  videoUrl?: string | null;
   thumbnailUrl?: string;
   title?: string;
   className?: string;
   aspectRatio?: "video" | "square";
+  mode?: "modal" | "inline";
 }
 
 export function VideoPlayer({
@@ -21,35 +22,66 @@ export function VideoPlayer({
   title = "Video",
   className,
   aspectRatio = "video",
+  mode = "modal",
 }: VideoPlayerProps) {
   const [isOpen, setIsOpen] = useState(false);
 
   // Convert YouTube URL to embed URL
-  const getEmbedUrl = (url: string) => {
-    if (url.includes("youtube.com/embed")) return url;
+  const getEmbedUrl = (url: string | null | undefined): string => {
+    if (!url) return "";
+    let embedUrl = url;
+
     if (url.includes("youtube.com/watch")) {
       const videoId = new URL(url).searchParams.get("v");
-      return `https://www.youtube.com/embed/${videoId}?autoplay=1`;
-    }
-    if (url.includes("youtu.be")) {
+      embedUrl = `https://www.youtube.com/embed/${videoId}`;
+    } else if (url.includes("youtu.be")) {
       const videoId = url.split("/").pop();
-      return `https://www.youtube.com/embed/${videoId}?autoplay=1`;
-    }
-    if (url.includes("vimeo.com")) {
+      embedUrl = `https://www.youtube.com/embed/${videoId}`;
+    } else if (url.includes("vimeo.com")) {
       const videoId = url.split("/").pop();
-      return `https://player.vimeo.com/video/${videoId}?autoplay=1`;
+      embedUrl = `https://player.vimeo.com/video/${videoId}`;
     }
-    return url;
+
+    // Add autoplay param if we're opening it
+    return `${embedUrl}?autoplay=1`;
   };
 
+  // Don't render if no video URL
+  if (!videoUrl) {
+    return null;
+  }
+
+  const embedUrl = getEmbedUrl(videoUrl);
+
+  if (mode === "inline") {
+    return (
+      <div
+        className={cn(
+          "relative w-full overflow-hidden rounded-xl bg-transparent",
+          aspectRatio === "video" ? "aspect-video" : "aspect-square",
+          className,
+        )}
+      >
+        <iframe
+          src={getEmbedUrl(videoUrl).replace("?autoplay=1", "")} // Remove autoplay for inline initial render
+          title={title}
+          className="w-full h-full"
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+          allowFullScreen
+        />
+      </div>
+    );
+  }
+
+  // Modal mode (default)
   return (
     <>
       <button
         onClick={() => setIsOpen(true)}
         className={cn(
-          "relative group overflow-hidden rounded-xl bg-gray-100 cursor-pointer",
+          "relative group w-full overflow-hidden rounded-xl bg-gray-100 cursor-pointer block",
           aspectRatio === "video" ? "aspect-video" : "aspect-square",
-          className
+          className,
         )}
       >
         {thumbnailUrl ? (
@@ -60,7 +92,7 @@ export function VideoPlayer({
             className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
           />
         ) : (
-          <div className="w-full h-full bg-gradient-to-br from-gray-800 to-gray-900 flex items-center justify-center">
+          <div className="w-full h-full bg-linear-to-br from-gray-800 to-gray-900 flex items-center justify-center">
             <span className="text-gray-400 text-sm">{title}</span>
           </div>
         )}
@@ -89,7 +121,7 @@ export function VideoPlayer({
           </button>
           <div className="aspect-video w-full">
             <iframe
-              src={getEmbedUrl(videoUrl)}
+              src={embedUrl}
               title={title}
               className="w-full h-full"
               allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"

@@ -17,7 +17,7 @@ import {
   SheetHeader,
   SheetTitle,
 } from "@/components/ui/sheet";
-import { cn } from "@/lib/utils";
+// import { cn } from "@/lib/utils";
 
 export function CartDrawer() {
   const {
@@ -25,7 +25,8 @@ export function CartDrawer() {
     isOpen,
     closeCart,
     removeItem,
-    updateQuantity,
+    clearCart,
+    // updateQuantity,
     subtotal,
     itemCount,
   } = useCartStore();
@@ -33,6 +34,7 @@ export function CartDrawer() {
 
   // Prevent hydration mismatch
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setMounted(true);
   }, []);
 
@@ -43,24 +45,36 @@ export function CartDrawer() {
       <SheetContent className="w-full sm:max-w-lg flex flex-col p-0 gap-0 border-l border-gray-100 bg-white">
         <SheetHeader className="p-6 border-b border-gray-100 bg-white/80 backdrop-blur-xl sticky top-0 z-10">
           <SheetTitle className="flex items-center justify-between w-full">
-            <div className="flex items-center gap-3 text-xl font-black text-gray-900 tracking-tight">
-              <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-primary">
-                <HugeiconsIcon icon={ShoppingBag02Icon} size={20} />
+            <div className="flex items-center gap-3">
+              <div className="flex items-center gap-3 text-xl font-black text-gray-900 tracking-tight">
+                <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-primary">
+                  <HugeiconsIcon icon={ShoppingBag02Icon} size={20} />
+                </div>
+                Your Cart
+                {itemCount > 0 && (
+                  <span className="text-sm font-bold text-gray-400 bg-gray-100 px-2.5 py-1 rounded-full border border-gray-200">
+                    {itemCount}
+                  </span>
+                )}
               </div>
-              Your Cart
-              {itemCount > 0 && (
-                <span className="text-sm font-bold text-gray-400 bg-gray-100 px-2.5 py-1 rounded-full border border-gray-200">
-                  {itemCount}
-                </span>
-              )}
             </div>
-            <button
-              onClick={closeCart}
-              className="p-2 -mr-2 text-gray-400 hover:text-gray-900 hover:bg-gray-100 rounded-full transition-colors"
-              aria-label="Close cart"
-            >
-              <HugeiconsIcon icon={Cancel01Icon} size={24} />
-            </button>
+            <div className="flex items-center gap-2">
+              {itemCount > 0 && (
+                <button
+                  onClick={clearCart}
+                  className="text-xs font-bold text-red-500 hover:text-red-600 hover:bg-red-50 px-3 py-1.5 rounded-full transition-colors uppercase tracking-wider"
+                >
+                  Clear
+                </button>
+              )}
+              <button
+                onClick={closeCart}
+                className="p-2 text-gray-400 hover:text-gray-900 hover:bg-gray-100 rounded-full transition-colors"
+                aria-label="Close cart"
+              >
+                <HugeiconsIcon icon={Cancel01Icon} size={24} />
+              </button>
+            </div>
           </SheetTitle>
         </SheetHeader>
 
@@ -195,6 +209,7 @@ export function CartButton() {
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setMounted(true);
   }, []);
 

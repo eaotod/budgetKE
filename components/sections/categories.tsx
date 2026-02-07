@@ -1,22 +1,15 @@
 import Link from "next/link";
 import Image from "next/image";
 
-const categoryImages = {
-  "personal-finance": "/images/categories/personal.webp",
-  "business-tools": "/images/categories/business.webp",
-  "industry-specific": "/images/categories/industry.webp",
-  bundles: "/images/categories/bundle.webp",
-};
+import { Category } from "@/lib/types";
 
-export function CategoriesSection({ categories }: { categories: any[] }) {
+export function CategoriesSection({ categories }: { categories: Category[] }) {
   return (
     <section className="py-8 md:py-12">
       <div className="max-w-6xl mx-auto px-6">
         <div className="grid grid-cols-2 md:grid-cols-4 gap-8 lg:gap-12">
           {categories.map((category) => {
-            const image =
-              categoryImages[category.id as keyof typeof categoryImages] ||
-              "/images/categories/personal.webp";
+            const image = `/images/categories/${category.slug}.webp`;
 
             return (
               <div key={category.id} className="group">

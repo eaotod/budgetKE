@@ -40,6 +40,7 @@ export function FilterInput({
     // Determine the base path (e.g., /templates or /bundles)
     const pathname = window.location.pathname;
     router.push(`${pathname}?${params.toString()}`, { scroll: false });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [debouncedQuery]);
 
   // Synchronize state with URL if changed externally (e.g., clearing filters)
@@ -48,6 +49,7 @@ export function FilterInput({
     if (urlSearch !== query) {
       setQuery(urlSearch);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchParams]);
 
   const clearSearch = () => {

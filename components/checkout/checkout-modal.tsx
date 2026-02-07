@@ -1,13 +1,20 @@
 "use client";
 
 import { useState } from "react";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogDescription } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+  DialogDescription,
+} from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { CallIcon, Loading03Icon } from "@hugeicons/core-free-icons";
-import { toast } from "sonner"; // Assuming sonner is installed or we use basic alert
+// import { toast } from "sonner";
 
 interface CheckoutModalProps {
   productName: string;
@@ -43,7 +50,7 @@ export function CheckoutModal({ productName, amount }: CheckoutModalProps) {
       } else {
         alert(data.error || "Payment failed");
       }
-    } catch (error) {
+    } catch {
       alert("Something went wrong");
     } finally {
       setLoading(false);
@@ -53,8 +60,11 @@ export function CheckoutModal({ productName, amount }: CheckoutModalProps) {
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <Button size="lg" className="w-full h-12 text-lg rounded-full bg-primary hover:bg-primary/90 font-semibold shadow-lg shadow-primary/20">
-            Pay KES {amount} with M-Pesa
+        <Button
+          size="lg"
+          className="w-full h-12 text-lg rounded-full bg-primary hover:bg-primary/90 font-semibold shadow-lg shadow-primary/20"
+        >
+          Pay KES {amount} with M-Pesa
         </Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-md">
@@ -67,7 +77,7 @@ export function CheckoutModal({ productName, amount }: CheckoutModalProps) {
 
         {step === "input" ? (
           <div className="space-y-4 py-4">
-             <div className="space-y-2">
+            <div className="space-y-2">
               <Label htmlFor="email">Email Address</Label>
               <Input
                 id="email"
@@ -80,11 +90,11 @@ export function CheckoutModal({ productName, amount }: CheckoutModalProps) {
               <Label htmlFor="phone">M-Pesa Number</Label>
               <div className="relative">
                 <Input
-                    id="phone"
-                    placeholder="254712345678"
-                    value={phone}
-                    onChange={(e) => setPhone(e.target.value)}
-                    className="pl-10"
+                  id="phone"
+                  placeholder="254712345678"
+                  value={phone}
+                  onChange={(e) => setPhone(e.target.value)}
+                  className="pl-10"
                 />
                 <HugeiconsIcon
                   icon={CallIcon}
@@ -92,10 +102,10 @@ export function CheckoutModal({ productName, amount }: CheckoutModalProps) {
                 />
               </div>
             </div>
-            <Button 
-                onClick={handlePayment} 
-                className="w-full bg-green-600 hover:bg-green-700 text-white" 
-                disabled={loading || !phone || !email}
+            <Button
+              onClick={handlePayment}
+              className="w-full bg-green-600 hover:bg-green-700 text-white"
+              disabled={loading || !phone || !email}
             >
               {loading && (
                 <HugeiconsIcon
@@ -109,14 +119,22 @@ export function CheckoutModal({ productName, amount }: CheckoutModalProps) {
         ) : (
           <div className="py-8 text-center space-y-4">
             <div className="mx-auto w-12 h-12 bg-green-100 rounded-full flex items-center justify-center animate-pulse">
-                <HugeiconsIcon icon={CallIcon} className="w-6 h-6 text-green-600" />
+              <HugeiconsIcon
+                icon={CallIcon}
+                className="w-6 h-6 text-green-600"
+              />
             </div>
             <h3 className="text-lg font-bold">Check your phone!</h3>
             <p className="text-gray-500">
-                A request has been sent to <strong>{phone}</strong>. Enter your M-Pesa PIN to complete payment.
+              A request has been sent to <strong>{phone}</strong>. Enter your
+              M-Pesa PIN to complete payment.
             </p>
-            <Button variant="outline" onClick={() => setStep("input")} className="mt-4">
-                Cancel / Try Again
+            <Button
+              variant="outline"
+              onClick={() => setStep("input")}
+              className="mt-4"
+            >
+              Cancel / Try Again
             </Button>
           </div>
         )}
