@@ -142,7 +142,7 @@ export function ProductGallery({
               key={index}
               onClick={() => setActiveIndex(index)}
               className={cn(
-                "relative w-24 h-24 rounded-2xl overflow-hidden flex-shrink-0 border transition-all duration-300",
+                "relative w-24 h-24 rounded-2xl overflow-hidden shrink-0 border transition-all duration-300",
                 activeIndex === index
                   ? "border-primary ring-4 ring-primary/10 scale-95"
                   : "border-gray-100 hover:border-gray-300 opacity-60 hover:opacity-100",
