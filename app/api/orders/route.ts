@@ -63,7 +63,28 @@ export async function POST(request: NextRequest) {
 
     const supabase = createAdminClient();
 
+    // Check for existing pending order to avoid duplicates
+    // We search by email, total and check payment_status
+    const { data: existingOrder } = await supabase
+      .from("orders")
+      .select("id, order_number")
+      .eq("email", email)
+      .eq("total", total)
+      .eq("payment_status", "pending")
+      .order("created_at", { ascending: false })
+      .limit(1)
+      .single();
+
+    if (existingOrder) {
+      return NextResponse.json({
+        success: true,
+        orderId: existingOrder.id,
+        orderNumber: existingOrder.order_number,
+      });
+    }
+
     const { data: order, error } = await supabase
+
       .from("orders")
       .insert({
         order_number: orderNumber,

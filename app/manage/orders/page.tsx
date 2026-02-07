@@ -1,8 +1,9 @@
-import { createClient } from "@/lib/supabase/server";
+import { createAdminClient } from "@/lib/supabase/admin";
+
 import { OrdersTable } from "@/components/manage/orders-table";
 
 export default async function OrdersPage() {
-  const supabase = await createClient();
+  const supabase = createAdminClient();
 
   const { data: orders = [], error } = await supabase
     .from("orders")

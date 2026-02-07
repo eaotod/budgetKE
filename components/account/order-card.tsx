@@ -6,7 +6,6 @@ import { HugeiconsIcon } from "@hugeicons/react";
 import {
   Download01Icon,
   CreditCardIcon,
-  Delete02Icon,
   Loading03Icon,
 } from "@hugeicons/core-free-icons";
 import NextImage from "next/image";
@@ -21,7 +20,6 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
-import { deleteOrder } from "@/app/account/actions";
 import { useRouter } from "next/navigation";
 
 interface OrderItem {
@@ -49,7 +47,7 @@ export function OrderCard({ order }: OrderCardProps) {
   const [isPayOpen, setIsPayOpen] = useState(false);
   const [phoneNumber, setPhoneNumber] = useState("254");
   const [isLoading, setIsLoading] = useState(false);
-  const [isDeleting, setIsDeleting] = useState(false);
+
   const [isPolling, setIsPolling] = useState(false);
   const [pollingCount, setPollingCount] = useState(0);
 
@@ -116,19 +114,6 @@ export function OrderCard({ order }: OrderCardProps) {
     }
   };
 
-  const handleDelete = async () => {
-    if (!confirm("Are you sure you want to delete this order?")) return;
-    setIsDeleting(true);
-    try {
-      await deleteOrder(order.uuid);
-      toast.success("Order deleted");
-    } catch {
-      toast.error("Failed to delete order");
-    } finally {
-      setIsDeleting(false);
-    }
-  };
-
   const isPending = order.status === "pending" || order.status === "failed";
   const isCompleted = order.status === "completed";
 
@@ -189,23 +174,6 @@ export function OrderCard({ order }: OrderCardProps) {
             >
               <HugeiconsIcon icon={CreditCardIcon} size={16} className="mr-2" />
               Pay Now
-            </Button>
-            <Button
-              size="sm"
-              variant="outline"
-              onClick={handleDelete}
-              disabled={isDeleting}
-              className="rounded-xl font-bold text-red-600 border-red-100 hover:bg-red-50 hover:border-red-200"
-            >
-              {isDeleting ? (
-                <HugeiconsIcon
-                  icon={Loading03Icon}
-                  size={16}
-                  className="animate-spin"
-                />
-              ) : (
-                <HugeiconsIcon icon={Delete02Icon} size={16} />
-              )}
             </Button>
           </div>
         )}
