@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Image from "next/image";
 import { cn } from "@/lib/utils";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { PlayIcon, ViewIcon } from "@hugeicons/core-free-icons";
@@ -76,11 +77,12 @@ export function ProductGallery({
         {allMedia[activeIndex]?.type === "video" ? (
           <div className="absolute inset-0 flex items-center justify-center cursor-pointer">
             {videoThumbnail && (
-              // eslint-disable-next-line @next/next/no-img-element
-              <img
+              <Image
                 src={videoThumbnail}
                 alt="Video thumbnail"
-                className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                fill
+                sizes="(max-width: 1024px) 100vw, 50vw"
+                className="object-cover transition-transform duration-700 group-hover:scale-105"
               />
             )}
             <div className="absolute inset-0 bg-black/20 backdrop-blur-[2px] transition-opacity group-hover:opacity-40" />
@@ -101,11 +103,13 @@ export function ProductGallery({
         ) : allMedia[activeIndex]?.url ? (
           <div className="w-full h-full cursor-zoom-in">
             <Zoom>
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
+              <Image
                 src={allMedia[activeIndex].url}
                 alt={`${productName} - Image ${activeIndex + 1}`}
-                className="w-full h-full object-cover transition-transform duration-500 ease-out group-hover:scale-150 origin-[var(--x)_var(--y)]"
+                fill
+                sizes="(max-width: 1024px) 100vw, 50vw"
+                className="object-cover transition-transform duration-500 ease-out group-hover:scale-150 origin-[var(--x)_var(--y)]"
+                unoptimized
               />
             </Zoom>
           </div>
@@ -151,11 +155,12 @@ export function ProductGallery({
               {media.type === "video" ? (
                 <div className="w-full h-full bg-gray-900 flex items-center justify-center relative">
                   {videoThumbnail && (
-                    // eslint-disable-next-line @next/next/no-img-element
-                    <img
+                    <Image
                       src={videoThumbnail}
                       alt="Thumbnail video"
-                      className="absolute inset-0 w-full h-full object-cover opacity-50"
+                      fill
+                      sizes="96px"
+                      className="object-cover opacity-50"
                     />
                   )}
                   <div className="relative z-10 w-8 h-8 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center text-white">
@@ -167,11 +172,12 @@ export function ProductGallery({
                   </div>
                 </div>
               ) : media.url ? (
-                // eslint-disable-next-line @next/next/no-img-element
-                <img
+                <Image
                   src={media.url}
                   alt={`Thumbnail ${index + 1}`}
-                  className="w-full h-full object-cover"
+                  fill
+                  sizes="96px"
+                  className="object-cover"
                 />
               ) : (
                 <div className="w-full h-full bg-gray-50 flex items-center justify-center">

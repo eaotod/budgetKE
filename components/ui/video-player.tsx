@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Image from "next/image";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { Cancel01Icon, PlayIcon } from "@hugeicons/core-free-icons";
 import { cn } from "@/lib/utils";
@@ -66,6 +67,7 @@ export function VideoPlayer({
           src={getEmbedUrl(videoUrl).replace("?autoplay=1", "")} // Remove autoplay for inline initial render
           title={title}
           className="w-full h-full"
+          loading="lazy"
           allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
           allowFullScreen
         />
@@ -85,11 +87,12 @@ export function VideoPlayer({
         )}
       >
         {thumbnailUrl ? (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img
+          <Image
             src={thumbnailUrl}
             alt={title}
-            className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+            fill
+            sizes="(max-width: 768px) 100vw, 50vw"
+            className="object-cover transition-transform duration-300 group-hover:scale-105"
           />
         ) : (
           <div className="w-full h-full bg-linear-to-br from-gray-800 to-gray-900 flex items-center justify-center">
@@ -124,6 +127,7 @@ export function VideoPlayer({
               src={embedUrl}
               title={title}
               className="w-full h-full"
+              loading="lazy"
               allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
               allowFullScreen
             />

@@ -13,6 +13,10 @@ const nextConfig: NextConfig = {
         protocol: 'https',
         hostname: 'myiciennpxswtyvaagtq.supabase.co',
       },
+      {
+        protocol: 'https',
+        hostname: 'intasend-prod-static.s3.amazonaws.com',
+      },
     ],
   },
 };

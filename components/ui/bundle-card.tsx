@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import {
   ShoppingCart01Icon,
@@ -67,11 +68,12 @@ export function BundleCard({ bundle, className }: BundleCardProps) {
       <Link href={`/bundles/${bundle.slug}`} className="block p-2">
         <div className="relative aspect-4/3 bg-gray-50 rounded-tl-[3.5rem] rounded-tr-[1rem] rounded-bl-[1rem] rounded-br-[3.5rem] overflow-hidden group/img">
           {bundle.thumbnailUrl ? (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img
+            <Image
               src={bundle.thumbnailUrl}
               alt={bundle.name}
-              className="w-full h-full object-cover transition-transform duration-700 group-hover/img:scale-110"
+              fill
+              sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
+              className="object-cover transition-transform duration-700 group-hover/img:scale-110"
             />
           ) : (
             <div className="w-full h-full flex items-center justify-center bg-gray-50/50">

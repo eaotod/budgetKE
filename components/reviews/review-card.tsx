@@ -1,5 +1,7 @@
 "use client";
 
+import Image from "next/image";
+
 import { useState } from "react";
 import { HugeiconsIcon } from "@hugeicons/react";
 import {
@@ -45,10 +47,11 @@ export function ReviewCard({ review, onHelpful, className }: ReviewCardProps) {
         {/* Avatar */}
         <div className="w-12 h-12 rounded-full bg-gray-100 flex items-center justify-center shrink-0 overflow-hidden">
           {review.authorAvatar ? (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img
+            <Image
               src={review.authorAvatar}
               alt={review.authorName}
+              width={48}
+              height={48}
               className="w-full h-full object-cover"
             />
           ) : (

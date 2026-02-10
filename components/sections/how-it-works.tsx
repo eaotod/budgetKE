@@ -9,17 +9,17 @@ const steps = [
   },
   {
     title: "Instant Payment",
-    description: "Pay securely via M-Pesa. Simple, fast, and automated.",
+    description: "Pay securely via M-Pesa. No account needed.",
     image: "/images/illustrations/step-2.png",
   },
   {
     title: "Download Files",
-    description: "Get immediate access to your Excel and Google Sheets files.",
+    description: "Get your templates instantly via email and on screen.",
     image: "/images/illustrations/step-3.png",
   },
   {
     title: "Master Money",
-    description: "Follow our guides to take full control of your finances.",
+    description: "Start taking control of your finances immediately.",
     image: "/images/illustrations/step-4.png",
   },
 ];

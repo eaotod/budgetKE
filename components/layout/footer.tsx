@@ -123,10 +123,10 @@ export function Footer() {
                 target="_blank"
                 rel="noreferrer"
               >
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
+                <Image
                   src="https://intasend-prod-static.s3.amazonaws.com/img/trust-badges/intasend-trust-badge-with-mpesa-hr-light.png"
-                  width="375px"
+                  width={375}
+                  height={80}
                   alt="IntaSend Secure Payments (PCI-DSS Compliant)"
                 />
               </a>

@@ -1,5 +1,7 @@
 import { Sidebar } from "@/components/manage/sidebar";
 import { requireAdmin } from "@/lib/auth/admin";
+import "@uiw/react-md-editor/markdown-editor.css";
+import "@uiw/react-markdown-preview/markdown.css";
 
 export default async function ManageLayout({
   children,

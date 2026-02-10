@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Image from "next/image";
 import Link from "next/link";
 import { HugeiconsIcon } from "@hugeicons/react";
 import {
@@ -113,10 +114,11 @@ export function CartDrawer() {
                   {/* Image placeholder */}
                   <div className="w-24 h-24 bg-gray-50 rounded-2xl shrink-0 flex items-center justify-center overflow-hidden border border-gray-100">
                     {item.image ? (
-                      // eslint-disable-next-line @next/next/no-img-element
-                      <img
+                      <Image
                         src={item.image}
                         alt={item.name}
+                        width={96}
+                        height={96}
                         className="w-full h-full object-cover"
                       />
                     ) : (

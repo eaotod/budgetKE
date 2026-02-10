@@ -94,29 +94,37 @@ function frontmatterToProduct(
   };
 }
 
+/** In-memory product cache — populated on first access, just like categories/bundles. */
+let cached: Map<string, Product> | null = null;
+
+function loadAll(): Map<string, Product> {
+  if (cached) return cached;
+  cached = new Map();
+  if (!fs.existsSync(PRODUCTS_DIR)) return cached;
+  const files = fs.readdirSync(PRODUCTS_DIR).filter((n) => n.endsWith(".mdx"));
+  for (const file of files) {
+    const slug = file.replace(/\.mdx$/, "");
+    const raw = fs.readFileSync(path.join(PRODUCTS_DIR, file), "utf8");
+    const { data } = matter(raw);
+    const fm = data as ProductFrontmatter;
+    const category = getCategoryById(fm.categoryId);
+    cached.set(slug, frontmatterToProduct(fm, category));
+  }
+  return cached;
+}
+
 export function getProductSlugs(): string[] {
-  if (!fs.existsSync(PRODUCTS_DIR)) return [];
-  return fs
-    .readdirSync(PRODUCTS_DIR)
-    .filter((name) => name.endsWith(".mdx"))
-    .map((name) => name.replace(/\.mdx$/, ""));
+  return Array.from(loadAll().keys());
 }
 
 export function getProductBySlug(slug: string): Product | null {
-  const fullPath = path.join(PRODUCTS_DIR, `${slug}.mdx`);
-  if (!fs.existsSync(fullPath)) return null;
-  const raw = fs.readFileSync(fullPath, "utf8");
-  const { data } = matter(raw);
-  const category = getCategoryById((data as ProductFrontmatter).categoryId);
-  return frontmatterToProduct(data as ProductFrontmatter, category);
+  return loadAll().get(slug) ?? null;
 }
 
 /** Resolve by product id (e.g. for reviews or legacy order items). */
 export function getProductById(id: string): Product | null {
-  const slugs = getProductSlugs();
-  for (const slug of slugs) {
-    const p = getProductBySlug(slug);
-    if (p && p.id === id) return p;
+  for (const p of loadAll().values()) {
+    if (p.id === id) return p;
   }
   return null;
 }
@@ -131,11 +139,8 @@ export function getProducts(opts?: {
   status?: "active" | "draft" | "archived";
   featured?: boolean;
 }): Product[] {
-  const slugs = getProductSlugs();
   const products: Product[] = [];
-  for (const slug of slugs) {
-    const p = getProductBySlug(slug);
-    if (!p) continue;
+  for (const p of loadAll().values()) {
     if (opts?.status && p.status !== opts.status) continue;
     if (opts?.categoryId && p.categoryId !== opts.categoryId) continue;
     if (opts?.featured === true && !p.isFeatured) continue;

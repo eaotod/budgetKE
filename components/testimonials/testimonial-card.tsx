@@ -1,7 +1,7 @@
 import { HugeiconsIcon } from "@hugeicons/react";
 import { QuoteDownIcon, StarIcon } from "@hugeicons/core-free-icons";
 import { VideoPlayer } from "@/components/ui/video-player";
-import NextImage from "next/image";
+import Image from "next/image";
 import type { Testimonial } from "@/lib/types";
 
 // Single testimonial card
@@ -34,10 +34,11 @@ export function TestimonialCard({ testimonial }: { testimonial: Testimonial }) {
       <div className="flex items-center gap-3 pt-4 border-t border-gray-100">
         <div className="w-12 h-12 rounded-full bg-gray-100 flex items-center justify-center overflow-hidden shrink-0">
           {testimonial.authorAvatar ? (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img
+            <Image
               src={testimonial.authorAvatar}
               alt={testimonial.authorName}
+              width={48}
+              height={48}
               className="w-full h-full object-cover"
             />
           ) : (
@@ -87,10 +88,11 @@ export function VideoTestimonialCard({
         <div className="flex items-center gap-3">
           <div className="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center overflow-hidden">
             {testimonial.authorAvatar ? (
-              // eslint-disable-next-line @next/next/no-img-element
-              <img
+              <Image
                 src={testimonial.authorAvatar}
                 alt={testimonial.authorName}
+                width={40}
+                height={40}
                 className="w-full h-full object-cover"
               />
             ) : (
@@ -153,7 +155,7 @@ export function WallOfLove({
                 <div className="flex items-center gap-3 mb-4">
                   <div className="w-10 h-10 rounded-full bg-gray-50 border border-gray-100 flex items-center justify-center overflow-hidden">
                     {testimonial.authorAvatar ? (
-                      <NextImage
+                      <Image
                         src={testimonial.authorAvatar}
                         alt={testimonial.authorName}
                         width={40}

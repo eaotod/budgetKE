@@ -13,7 +13,7 @@ const testimonials = [
     video: "/videos/proofs/proof-1.mp4",
   },
   {
-    name: "Sarah Mwangi",
+    name: "Sarah Njoroge",
     role: "Freelance Consultant",
     image: "/images/social-proof/2.png",
     video: "/videos/proofs/proof-2.mp4",
@@ -25,7 +25,7 @@ const testimonials = [
     video: "/videos/proofs/proof-3.mp4",
   },
   {
-    name: "Faith Kyallo",
+    name: "Grace Wanjiku",
     role: "Financial Advisor",
     image: "/images/social-proof/4.png",
     video: "/videos/proofs/proof-4.mp4",

@@ -1,4 +1,3 @@
-import { createClient } from "@/lib/supabase/server";
 import { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { Navbar } from "@/components/layout/navbar";
@@ -12,8 +11,7 @@ import { ProductCard } from "@/components/ui/product-card";
 import { FAQAccordion, FAQJsonLd } from "@/components/faq/faq-accordion";
 import { VideoPlayer } from "@/components/ui/video-player";
 import { AnimatedLabel } from "@/components/ui/animated-label";
-import { mapReviews } from "@/lib/mappers";
-import type { Review, Product } from "@/lib/types";
+import type { Product } from "@/lib/types";
 import { getProductFaqsByType } from "@/lib/data";
 import { getProductBySlug, getProducts } from "@/lib/catalog";
 
@@ -140,27 +138,11 @@ export default async function ProductPage({ params }: ProductPageProps) {
     .filter((p) => p.id !== product.id)
     .slice(0, 4);
 
-  const supabase = await createClient();
-  const { data: reviewsData = [], count: totalReviewCount } = await supabase
-    .from("reviews")
-    .select("*", { count: "exact" })
-    .eq("product_id", product.id)
-    .eq("moderation_status", "accepted")
-    .order("created_at", { ascending: false })
-    .limit(25);
-
-  // Override static data with real DB data
   const productWithCategory = {
     ...product,
     category: product.category,
-    reviewCount: totalReviewCount ?? 0,
-    // If we have reviews, calculate average? For now keep static rating or calc from reviews if possible.
-    // But strictly to fix the "234 reviews" issue, overriding reviewCount is enough to hide the block if 0.
   };
 
-  const reviews: Review[] = mapReviews(
-    reviewsData as unknown as Record<string, unknown>[],
-  );
   const faqs = getProductFaqsByType(product.productType);
 
   // Breadcrumb items
@@ -272,11 +254,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
         {/* Reviews Section */}
         <div className="py-8 lg:py-16 border-t border-gray-100">
           <div className="max-w-6xl mx-auto px-6">
-            <ReviewsSection
-              product={productWithCategory}
-              reviews={reviews}
-              totalReviews={totalReviewCount ?? product.reviewCount}
-            />
+            <ReviewsSection product={productWithCategory} />
           </div>
         </div>
 
